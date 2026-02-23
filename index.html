@@ -11,61 +11,13 @@
     --bg: #020408;
     --panel: rgba(0,255,180,0.03);
     --border: rgba(0,255,180,0.15);
-    --glow: #3273dc;
+    --glow: #48c774; /* Default Earth Green */
     --glow2: #00c8ff;
     --text: #a0ffdc;
     --dim: #3a6655;
     --red: #ff3860;
     --amber: #ffb700;
     --white: #e8fff8;
-
-    /* --- ELEMENTAL ANIMATIONS --- */
-
-/* FIRE: Intense flickering and a "heat haze" pulse */
-.theme-fire {
-    animation: firePulse 2s infinite alternate;
-    box-shadow: inset 0 0 50px rgba(255, 56, 96, 0.2);
-}
-@keyframes firePulse {
-    0% { filter: brightness(1) contrast(1.2); }
-    100% { filter: brightness(1.3) contrast(1.5) drop-shadow(0 0 10px #ff3860); }
-}
-
-/* AIR: Subtle floating movement and fading glow */
-.theme-air {
-    animation: airFloat 4s ease-in-out infinite;
-}
-@keyframes airFloat {
-    0%, 100% { transform: translateY(0); opacity: 0.8; }
-    50% { transform: translateY(-5px); opacity: 1; }
-}
-
-/* WATER: A "ripple" effect using a shifting gradient */
-.theme-water {
-    background: linear-gradient(120deg, rgba(2,4,8,1) 0%, rgba(50,115,220,0.05) 50%, rgba(2,4,8,1) 100%);
-    background-size: 200% 200%;
-    animation: waterFlow 6s linear infinite;
-}
-@keyframes waterFlow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-}
-
-/* EARTH: Solid, heavy borders and a static "high-contrast" feel */
-.theme-earth {
-    border: 2px solid var(--glow) !important;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
-    transition: all 0.5s step-start;
-}
-
-/* VOID: Slow "breathing" and chromatic aberration */
-.theme-void {
-    animation: voidBreathe 10s infinite;
-}
-@keyframes voidBreathe {
-    0%, 100% { filter: hue-rotate(0deg) blur(0px); }
-    50% { filter: hue-rotate(45deg) blur(1px); }
-}
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -79,7 +31,7 @@
     position: relative;
   }
 
-  /* --- CRT EFFECTS --- */
+  /* --- CRT & VORTEX EFFECTS --- */
   body::after {
     content: " ";
     display: block;
@@ -90,11 +42,43 @@
     z-index: 10;
     background-size: 100% 4px, 3px 100%;
     pointer-events: none;
+    animation: flicker 0.15s infinite;
   }
 
-  @keyframes flicker {
-    0% { opacity: 0.9; } 5% { opacity: 0.8; } 10% { opacity: 0.95; } 100% { opacity: 0.9; }
+  @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 0.85; } 100% { opacity: 0.9; } }
+
+  /* 🌀 THE TWIRLING AURA (Orbital Movement) */
+  .twirl-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border: 1px solid var(--glow);
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    animation: morph 8s linear infinite, spin 20s linear infinite;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 1;
   }
+
+  @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @keyframes morph {
+    0%, 100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+    50% { border-radius: 26% 74% 42% 58% / 57% 51% 49% 43%; }
+  }
+
+  /* --- ELEMENTAL THEMES --- */
+  .theme-fire { filter: drop-shadow(0 0 15px var(--red)); animation: firePulse 2s infinite alternate; }
+  @keyframes firePulse { 0% { brightness: 1; } 100% { brightness: 1.4; } }
+
+  .theme-air { animation: airFloat 4s ease-in-out infinite; }
+  @keyframes airFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+  .theme-water .timer-display { animation: rippleTwirl 3s ease-in-out infinite; }
+  @keyframes rippleTwirl { 0%, 100% { transform: rotate(-1deg) scale(1); } 50% { transform: rotate(1deg) scale(1.05); } }
+
+  .theme-void { filter: hue-rotate(45deg) blur(0.5px); animation: voidBreathe 10s infinite; }
+  @keyframes voidBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   .hud {
     position: relative;
@@ -107,63 +91,34 @@
     gap: 20px;
     max-width: 1400px;
     margin: 0 auto;
-    animation: flicker 0.1s infinite;
   }
-
-  /* Low Power State */
-  .low-power {
-    filter: sepia(0.8) saturate(2) hue-rotate(-50deg);
-    transition: all 2s ease;
-  }
-
-  /* --- GLOBE & STARS --- */
-  #stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
-  .star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; }
-
-  /* --- UI COMPONENTS --- */
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 15px;
-    backdrop-filter: blur(4px);
-    position: relative;
-  }
-
-  .panel-title { font-family: 'Orbitron'; font-size: 9px; color: var(--dim); margin-bottom: 10px; letter-spacing: 2px; }
 
   .timer-display {
     font-family: 'Orbitron';
-    font-size: 72px;
+    font-size: 82px;
     text-align: center;
     color: var(--white);
-    text-shadow: 0 0 20px var(--glow2);
+    text-shadow: 0 0 30px var(--glow);
+    animation: spiralIn 1s ease-out;
   }
 
-  .warp-btn {
-    width: 100%; padding: 15px; background: transparent; 
-    border: 2px solid var(--glow); color: var(--glow);
-    font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
-  }
+  @keyframes spiralIn { 0% { transform: rotate(-180deg) scale(0); opacity: 0; } 100% { transform: rotate(0) scale(1); opacity: 1; } }
 
+  .panel { background: var(--panel); border: 1px solid var(--border); padding: 15px; backdrop-filter: blur(8px); }
+  .panel-title { font-family: 'Orbitron'; font-size: 10px; color: var(--glow); margin-bottom: 10px; letter-spacing: 2px; }
+  .warp-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--glow); color: var(--glow); font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
+  .warp-btn:hover { background: var(--glow); color: var(--bg); }
   .warp-btn.engaged { border-color: var(--red); color: var(--red); }
-
-  .logbook { height: 120px; overflow-y: auto; font-size: 10px; color: var(--text); border-top: 1px solid var(--border); }
-  .log-entry { margin-top: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-  .pilot-input {
-    background: transparent; border: none; border-bottom: 1px solid var(--glow);
-    color: var(--white); font-family: 'Orbitron'; width: 100%; outline: none;
-  }
-
-  .stream-item { padding: 8px; border: 1px solid var(--border); margin-top: 5px; cursor: pointer; font-size: 11px; }
-  .stream-item.playing { background: rgba(0,255,180,0.1); border-color: var(--glow); }
-
+  .logbook { height: 150px; overflow-y: auto; font-size: 11px; }
+  .pilot-input { background: transparent; border: none; border-bottom: 1px solid var(--glow); color: var(--white); font-family: 'Orbitron'; width: 100%; outline: none; }
 </style>
 </head>
 <body>
 
 <div id="stars"></div>
-<div class="hud" id="hudFrame">
+<div class="twirl-overlay"></div>
+
+<div class="hud theme-earth" id="hudFrame">
   <div style="grid-column: 1/-1; display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:5px;">
     <span style="font-family:'Orbitron'; font-size:10px;">CHRONOS_V38_SOVEREIGN</span>
     <span id="sysTime">SYS_TIME: --:--:--</span>
@@ -171,16 +126,16 @@
 
   <div class="panel">
     <div class="panel-title">PILOT_ID</div>
-    <input type="text" id="pilotInput" class="pilot-input" placeholder=" | AIM: time" oninput="savePilot(this.value)">
+    <input type="text" id="pilotInput" class="pilot-input" value="TRAVELER | EARTH" readonly>
     <div style="margin-top:15px; font-size:12px;">
-      <div>SESSIONS: <span id="sessionCount" style="color:var(--glow)">0</span></div>
-      <div>TOTAL_MIN: <span id="minuteCount" style="color:var(--glow)">0</span></div>
-      <div>STATUS: <span id="pilotStatus" style="color:var(--glow2)">STANDBY</span></div>
+      <div>SESSIONS: <span id="sessionCount">0</span></div>
+      <div>MINUTES: <span id="minuteCount">0</span></div>
+      <div>STATUS: <span id="pilotStatus" style="color:var(--glow)">STANDBY</span></div>
     </div>
     
     <div class="panel-title" style="margin-top:20px;">NEURAL_STREAM</div>
-    <div class="stream-item" id="stream-0" onclick="selectStream(0)">NIGHTRIDE FM</div>
-    <div class="stream-item" id="stream-1" onclick="selectStream(1)">LANA DEL REY MIX</div>
+    <div onclick="selectStream(0)" style="cursor:pointer; padding:5px; border:1px solid var(--border); margin-bottom:5px;">NIGHTRIDE FM</div>
+    <div onclick="selectStream(1)" style="cursor:pointer; padding:5px; border:1px solid var(--border);">LANA DEL REY MIX</div>
   </div>
 
   <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -190,193 +145,82 @@
 
   <div class="panel">
     <div class="panel-title">IROH_WISDOM</div>
-    <div id="irohBox" style="font-style:italic; font-size:12px; min-height:50px; color:var(--amber);">Tea is just hot leaf juice...</div>
-    <button onclick="consultIroh()" style="width:100%; background:transparent; border:1px solid var(--amber); color:var(--amber); margin-top:10px; cursor:pointer;">CONSULT</button>
-    
-    <div class="panel-title" style="margin-top:20px;">FLIGHT_LOG</div>
+    <div id="irohBox" style="font-style:italic; font-size:13px; color:var(--amber);">Destiny is a funny thing...</div>
+    <div class="panel-title" style="margin-top:25px;">FLIGHT_LOG</div>
     <div class="logbook" id="logbook"></div>
   </div>
 </div>
 
 <script>
-  let timerInterval = null;
   let secondsLeft = 25 * 60;
   let isRunning = false;
-  let currentStream = -1;
-
-  // Persistent Data
-  let sessionCount = parseInt(localStorage.getItem('sv38_sessions') || '0');
-  let minuteCount = parseInt(localStorage.getItem('sv38_minutes') || '0');
-  let pilotName = localStorage.getItem('sv38_pilot') || "";
-
-  const streams = [
-    { name: 'NIGHTRIDE FM', url: 'https://www.youtube.com/watch?v=UjlMEqTu2KI' },
-    { name: 'LANA DEL REY MIX', url: 'https://www.youtube.com/watch?v=VFTMHqPFKkQ' }
-  ];
+  let timerInterval = null;
 
   window.onload = () => {
-    document.getElementById('sessionCount').textContent = sessionCount;
-    document.getElementById('minuteCount').textContent = minuteCount;
-    document.getElementById('pilotInput').value = pilotName;
+    document.getElementById('sessionCount').innerText = localStorage.getItem('sv38_sessions') || 0;
+    document.getElementById('minuteCount').innerText = localStorage.getItem('sv38_minutes') || 0;
     addLog("SYSTEM_BOOT: OS v38.0.1 Stable");
     createStars();
   };
 
-  function savePilot(val) { localStorage.setItem('sv38_pilot', val.toUpperCase()); }
-
   function toggleWarp() {
-    if (!isRunning) startWarp();
-    else stopWarp();
+    if (!isRunning) {
+        isRunning = true;
+        document.getElementById('warpBtn').innerText = "ABORT_WARP";
+        document.getElementById('warpBtn').classList.add('engaged');
+        timerInterval = setInterval(updateTimer, 1000);
+    } else {
+        clearInterval(timerInterval);
+        isRunning = false;
+        document.getElementById('warpBtn').innerText = "ENGAGE_WARP";
+        document.getElementById('warpBtn').classList.remove('engaged');
+    }
   }
 
-  function startWarp() {
-    isRunning = true;
-    document.getElementById('warpBtn').textContent = 'ABORT_WARP';
-    document.getElementById('warpBtn').classList.add('engaged');
-    document.getElementById('pilotStatus').textContent = 'IN_WARP';
-    addLog("WARP_ENGAGED: Hyper-focus protocol.");
-
-    timerInterval = setInterval(() => {
-      secondsLeft--;
-      document.getElementById('timerDisplay').textContent = formatTime(secondsLeft);
-      
-      if (secondsLeft === 60) {
-        document.getElementById('hudFrame').classList.add('low-power');
-        addLog("WARNING: Low power mode.");
-      }
-      
-      if (secondsLeft <= 0) warpComplete();
-    }, 1000);
+  function updateTimer() {
+    secondsLeft--;
+    document.getElementById('timerDisplay').innerText = formatTime(secondsLeft);
+    if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        completeSession();
+    }
   }
 
-  function warpComplete() {
-    clearInterval(timerInterval);
-    isRunning = false;
-    sessionCount++;
-    minuteCount += 25;
-    localStorage.setItem('sv38_sessions', sessionCount);
-    localStorage.setItem('sv38_minutes', minuteCount);
-    
-    document.getElementById('sessionCount').textContent = sessionCount;
-    document.getElementById('minuteCount').textContent = minuteCount;
-    
-    addLog(`MISSION_SUCCESS: Session #${sessionCount} complete.`);
-    resetHUD();
-    
-    // Autoplay trigger
-    const playIdx = currentStream === -1 ? 0 : currentStream;
-    selectStream(playIdx);
-  }
-
-  function resetHUD() {
-    secondsLeft = 25 * 60;
-    document.getElementById('timerDisplay').textContent = "25:00";
-    document.getElementById('warpBtn').textContent = 'ENGAGE_WARP';
-    document.getElementById('warpBtn').classList.remove('engaged');
-    document.getElementById('hudFrame').classList.remove('low-power');
-    document.getElementById('pilotStatus').textContent = 'STANDBY';
+  function completeSession() {
+    let s = parseInt(localStorage.getItem('sv38_sessions') || 0) + 1;
+    let m = parseInt(localStorage.getItem('sv38_minutes') || 0) + 25;
+    localStorage.setItem('sv38_sessions', s);
+    localStorage.setItem('sv38_minutes', m);
+    addLog("MISSION_SUCCESS: Session Logged.");
+    window.open("https://www.youtube.com/watch?v=UjlMEqTu2KI", "_blank"); // Autoplay Trigger
   }
 
   function formatTime(s) {
-    const m = Math.floor(s/60);
-    const sec = s % 60;
+    let m = Math.floor(s / 60);
+    let sec = s % 60;
     return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-  }
-
-  function selectStream(idx) {
-    currentStream = idx;
-    document.querySelectorAll('.stream-item').forEach(el => el.classList.remove('playing'));
-    document.getElementById(`stream-${idx}`).classList.add('playing');
-    window.open(streams[idx].url, '_blank');
-    addLog(`STREAM_LOCKED: ${streams[idx].name}`);
   }
 
   function addLog(msg) {
     const lb = document.getElementById('logbook');
-    const time = new Date().toLocaleTimeString();
-    lb.innerHTML = `<div class="log-entry">[${time}] ${msg}</div>` + lb.innerHTML;
-  }
-
-  function consultIroh() {
-    const quotes = ["Destiny is a funny thing.", "Tea is hot leaf juice.", "Hope is something you give yourself."];
-    document.getElementById('irohBox').textContent = quotes[Math.floor(Math.random()*quotes.length)];
-    addLog("IROH_ADVICE: Received.");
+    lb.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + lb.innerHTML;
   }
 
   function createStars() {
     const container = document.getElementById('stars');
-    for(let i=0; i<100; i++) {
+    for(let i=0; i<80; i++) {
       let s = document.createElement('div');
-      s.className = 'star';
-      s.style.width = s.style.height = Math.random()*3+'px';
-      s.style.left = Math.random()*100+'%';
-      s.style.top = Math.random()*100+'%';
+      s.style.position = "absolute";
+      s.style.width = "2px"; s.style.height = "2px";
+      s.style.background = "white";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 100 + "%";
+      s.style.opacity = Math.random();
       container.appendChild(s);
     }
   }
 
-  setInterval(() => {
-    document.getElementById('sysTime').textContent = "SYS_TIME: " + new Date().toLocaleTimeString();
-  }, 1000);
-
+  setInterval(() => { document.getElementById('sysTime').innerText = "SYS_TIME: " + new Date().toLocaleTimeString(); }, 1000);
 </script>
 </body>
 </html>
-
-/* THEME ENGINE: Bot-Controlled */
-:root {
-    --glow: #3273dc; /* This value is changed by the Iroh Bot */
-    --hud-alignment: 'Earth'; 
-}
-
-/* EXTRA THEME SPACE: Reserved for future Void/Spirit themes */
-.void-theme {
-    background: radial-gradient(circle, #1a0033 0%, #000 100%);
-    filter: contrast(1.2) brightness(0.8);
-}
-MISSION_SUCCESS
-/* 1. The Twirling Aura (Orbital Movement) */
-.twirl-overlay {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border: 1px solid var(--glow);
-    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-    animation: morph 8s linear infinite, spin 20s linear infinite;
-    opacity: 0.1;
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* 2. The Spiral Glitch (Twirling Text) */
-@keyframes spiralIn {
-    0% { transform: rotate(-720deg) scale(0); opacity: 0; }
-    100% { transform: rotate(0deg) scale(1); opacity: 1; }
-}
-
-/* 3. The Particle Vortex (Background Twirl) */
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes morph {
-    0% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
-    50% { border-radius: 26% 74% 42% 58% / 57% 51% 49% 43%; }
-    100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
-}
-
-/* Theme-Specific Twirls */
-.theme-air .panel {
-    animation: airFloat 6s ease-in-out infinite, spin 60s linear infinite;
-}
-
-.theme-water .timer-display {
-    text-shadow: 0 0 10px var(--glow);
-    animation: rippleTwirl 3s ease-in-out infinite;
-}
-
-@keyframes rippleTwirl {
-    0%, 100% { transform: rotate(-1deg) scale(1); }
-    50% { transform: rotate(1deg) scale(1.05); }
-}
