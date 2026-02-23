@@ -2,66 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CHRONOS_ZENITH_HUD</title>
+    <title>CHRONOS_APEX_HUD</title>
     <style>
-        :root { --glow: #00d1b2; --bg: #05070a; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: 'Inter', 'Courier New', monospace; height: 100vh; overflow: hidden; }
+        :root { --glow: #00d1b2; --bg: #010203; --font: 'Space Mono', 'Courier New', monospace; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: var(--font); height: 100vh; overflow: hidden; }
         
-        /* The Sovereign Frame */
-        .hud { 
-            border: 1px solid rgba(255,255,255,0.1); 
-            height: 94vh; margin: 3vh; position: relative; 
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            background: radial-gradient(circle at center, rgba(10, 12, 18, 0.8) 0%, #05070a 100%);
-            backdrop-filter: blur(10px);
+        /* The Apex Frame */
+        .hud-container { 
+            height: 100vh; width: 100vw; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, rgba(15, 20, 30, 1) 0%, #010203 100%);
+            position: relative;
         }
-        
-        /* THEME OVERLAYS */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        
-        .theme-fire { --glow: #ff3860; box-shadow: inset 0 0 100px rgba(255, 56, 96, 0.2); }
-        .theme-water { --glow: #3273dc; box-shadow: inset 0 0 100px rgba(50, 115, 220, 0.2); }
-        .theme-air { --glow: #00d1b2; box-shadow: inset 0 0 100px rgba(0, 209, 178, 0.2); }
-        .theme-void { --glow: #8a2be2; filter: contrast(1.2) saturate(1.2); }
 
-        /* The Intent Portal (Stylish Glass-morphism) */
-        .intent-portal { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 80%; text-align: center; z-index: 10; 
-        }
+        /* Reactive Borders */
+        .border-top { position: absolute; top: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--glow), transparent); box-shadow: 0 0 15px var(--glow); }
+        .border-bottom { position: absolute; bottom: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--glow), transparent); box-shadow: 0 0 15px var(--glow); }
+
+        /* Intent Portal */
+        .intent-portal { text-align: center; z-index: 10; transform: skewX(-5deg); }
+        .label { font-size: 0.7rem; letter-spacing: 10px; opacity: 0.6; margin-bottom: 10px; display: block; }
         #hud-intent { 
-            font-size: 5rem; font-weight: 900; text-transform: uppercase; 
-            letter-spacing: -2px; color: #fff; 
-            text-shadow: 0 0 30px var(--glow); 
-            display: block; opacity: 0.9;
-        }
-        .status-tag { 
-            display: inline-block; padding: 4px 12px; background: var(--glow); 
-            color: #000; font-size: 0.7rem; font-weight: bold; margin-bottom: 20px;
+            font-size: 7vw; font-weight: 900; text-transform: uppercase; 
+            color: #fff; text-shadow: 3px 3px 0px var(--glow), 0 0 40px var(--glow);
+            letter-spacing: -5px; line-height: 0.9;
         }
 
-        /* Glitch Effect for VOID */
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-5px, 5px); }
-            40% { transform: translate(-5px, -5px); }
-            60% { transform: translate(5px, 5px); }
-            80% { transform: translate(5px, -5px); }
-            100% { transform: translate(0); }
-        }
-        .vortex-active { animation: glitch 0.3s infinite; }
+        /* THEME OVERLAYS */
+        .theme-fire { --glow: #ff3860; }
+        .theme-water { --glow: #209cee; }
+        .theme-earth { --glow: #48c774; }
+        .theme-air { --glow: #f5f5f5; }
+        .theme-void { --glow: #8a2be2; animation: void-pulse 5s infinite; }
 
-        /* Scanlines */
-        .scanline { width: 100%; height: 2px; background: rgba(255,255,255,0.03); position: absolute; animation: scan 4s linear infinite; z-index: 5; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        @keyframes void-pulse { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(45deg) brightness(1.5); } }
+
+        /* CRT Noise Overlay */
+        .crt::before {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 100; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        }
     </style>
 </head>
-<body class="hud theme-water">
-    <div class="scanline"></div>
-    <div class="overlay"></div>
-    <div class="intent-portal">
-        <div class="status-tag">NEURAL_LINK_ACTIVE</div>
-        <span id="hud-intent">goal</span>
+<body class="theme-void">
+    <div class="crt hud-container">
+        <div class="border-top"></div>
+        <div class="intent-portal">
+            <span class="label">NEURAL_OBJECTIVE_ESTABLISHED</span>
+            <span id="hud-intent">AWAITING_INPUT</span>
+        </div>
+        <div class="border-bottom"></div>
     </div>
 
     <script>
@@ -74,6 +65,7 @@
         };
 
         function checkSignal() {
+            if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
                 missionSuccessDetected = true;
                 let target = musicMap[activeMusic] || activeMusic;
                 window.open(target, '_blank');
