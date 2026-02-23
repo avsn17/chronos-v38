@@ -240,3 +240,15 @@ function handleMusicAutoplay() {
 
 // Logic to check for "MISSION_SUCCESS" from the Bot
 // When the bot writes to index.html, JS detects and plays music
+function applyTemporalTheme() {
+    const hour = new Date().getHours();
+    const hud = document.getElementById('hudFrame');
+    
+    if (hour >= 21 || hour < 6) {
+        hud.style.filter = "hue-rotate(280deg) brightness(0.7)"; // Midnight Void
+        addLog("SYSTEM: Spirit Hour detected. Stability decreased.");
+    } else if (hour >= 17) {
+        hud.style.filter = "sepia(0.4) saturate(1.2)"; // Evening Tea
+    }
+}
+setInterval(applyTemporalTheme, 60000); // Check every minute
