@@ -53,8 +53,30 @@
                 missionSuccessDetected = true;
                 window.open(musicMap[activeMusic] || activeMusic, '_blank');
             }
-        }
+        
         setInterval(checkSignal, 2000);
     </script>
 </body>
 </html>
+<script>
+    var activeMusic = "CAS";
+    var missionSuccessDetected = false;
+    
+    const musicMap = {
+        "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
+        "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
+        "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
+    };
+
+    function checkSignal() {
+        if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
+            missionSuccessDetected = true;
+            
+            // Check if activeMusic is a preset key or a direct URL
+            let target = musicMap[activeMusic] || activeMusic;
+            
+            window.open(target, '_blank');
+        }
+    }
+    setInterval(checkSignal, 2000);
+</script>

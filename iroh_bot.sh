@@ -7,22 +7,32 @@ NC='\033[0m'
 function iroh_say() { echo -e "\n${GOLD}[IROH]: $1${NC}"; }
 
 clear
-iroh_say "The mind is like this water, my friend. When it is agitated, it becomes difficult to see."
-read -p "PILOT NAME: " PILOT_NAME
+iroh_say "A wise man knows that time is as fluid as the river. Who is the pilot today?"
+read -p "CALLSIGN >> " PILOT_NAME
 
 while true; do
     # RESET SIGNAL
     sed -i '/MISSION_SUCCESS/d' $HUD_FILE
 
-    echo -e "\n1) CAS | 2) LANA | 3) BEEGEES | [Q] QUIT"
-    read -p "VIBE >> " VIBE
+    echo -e "\n${CYAN}--- NEURAL STREAM SELECTION ---${NC}"
+    echo -e "1) Cigarettes After Sex\n2) Lana Del Rey\n3) Bee Gees\n4) Custom YouTube URL\n[Q] Quit"
+    read -p "SELECTION >> " VIBE
+    
     case $VIBE in
-        1) MUSIC="CAS" ;; 2) MUSIC="LANA" ;; 3) MUSIC="BEEGEES" ;; 
-        [Qq]*) break ;; *) MUSIC="CAS" ;;
+        1) MUSIC="CAS" ;;
+        2) MUSIC="LANA" ;;
+        3) MUSIC="BEEGEES" ;;
+        4) read -p "PASTE YOUTUBE URL >> " MUSIC ;;
+        [Qq]*) break ;;
+        *) MUSIC="CAS" ;;
     esac
 
+    iroh_say "How many minutes shall this focus session last?"
+    read -p "MINUTES >> " DUR
+    DUR=${DUR:-25} # Default to 25 if empty
+
     echo -e "ELEMENT: FIRE / WATER / EARTH / AIR / VOID"
-    read -p "ELEMENT >> " THEME
+    read -p "THEME >> " THEME
     THEME=${THEME^^}
 
     read -p "WHAT IS YOUR INTENT? >> " AIM
@@ -32,17 +42,17 @@ while true; do
     sed -i "s/var activeMusic = \".*\";/var activeMusic = \"$MUSIC\";/" $HUD_FILE
     sed -i "s/id=\"hud-intent\">.*<\/span>/id=\"hud-intent\">$AIM<\/span>/" $HUD_FILE
 
-    iroh_say "The $THEME path is set. I will wake you when the tea is ready."
+    iroh_say "The path of $THEME is set for $DUR minutes. Focus your breath."
     
-    # 25 Minute Focus Timer
-    seconds=$(( 25 * 60 ))
+    # DYNAMIC TIMER
+    seconds=$(( DUR * 60 ))
     while [ $seconds -gt 0 ]; do
-        printf "\r${CYAN}[WARP_DRIVE]${NC} %02d:%02d | ${GOLD}$THEME${NC} | $AIM " "$((seconds/60))" "$((seconds%60))"
+        printf "\r${CYAN}[WARP]${NC} %02d:%02d | ${GOLD}$THEME${NC} | $AIM " "$((seconds/60))" "$((seconds%60))"
         sleep 1
         : $((seconds--))
     done
 
     # TRIGGER MUSIC
     echo "" >> $HUD_FILE
-    iroh_say "Warp complete. Your $MUSIC stream is launching. Rest your mind."
+    iroh_say "The $DUR minutes have passed. Your music is launching. Enjoy the tea."
 done
