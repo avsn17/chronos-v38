@@ -2,42 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CHRONOS_APEX_HUD</title>
+    <title>CHRONOS_APEX_SOVEREIGN</title>
     <style>
-        :root { --glow: #00d1b2; --bg: #010203; --font: 'Space Mono', 'Courier New', monospace; }
+        :root { --glow: #00d1b2; --bg: #010203; --font: 'Space Mono', monospace; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: var(--font); height: 100vh; overflow: hidden; }
         
-        /* The Apex Frame */
         .hud-container { 
             height: 100vh; width: 100vw; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: radial-gradient(circle at center, rgba(15, 20, 30, 1) 0%, #010203 100%);
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, rgba(10, 15, 25, 1) 0%, #010203 100%);
             position: relative;
         }
 
-        /* Reactive Borders */
-        .border-top { position: absolute; top: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--glow), transparent); box-shadow: 0 0 15px var(--glow); }
-        .border-bottom { position: absolute; bottom: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--glow), transparent); box-shadow: 0 0 15px var(--glow); }
+        /* TELEMETRY SIDEBAR */
+        .sidebar {
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            width: 200px; border-left: 1px solid var(--glow); padding: 20px;
+            text-align: left; font-size: 0.7rem; letter-spacing: 1px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+        }
+        .data-point { margin-bottom: 15px; }
+        .data-label { opacity: 0.5; display: block; margin-bottom: 5px; }
+        .data-value { font-weight: bold; text-transform: uppercase; }
 
-        /* Intent Portal */
-        .intent-portal { text-align: center; z-index: 10; transform: skewX(-5deg); }
-        .label { font-size: 0.7rem; letter-spacing: 10px; opacity: 0.6; margin-bottom: 10px; display: block; }
+        /* INTENT PORTAL */
+        .intent-portal { text-align: center; z-index: 10; }
         #hud-intent { 
-            font-size: 7vw; font-weight: 900; text-transform: uppercase; 
-            color: #fff; text-shadow: 3px 3px 0px var(--glow), 0 0 40px var(--glow);
-            letter-spacing: -5px; line-height: 0.9;
+            font-size: 8vw; font-weight: 900; text-transform: uppercase; 
+            color: #fff; text-shadow: 0 0 40px var(--glow);
+            letter-spacing: -5px; line-height: 0.8;
         }
 
-        /* THEME OVERLAYS */
+        /* THEMES */
         .theme-fire { --glow: #ff3860; }
         .theme-water { --glow: #209cee; }
         .theme-earth { --glow: #48c774; }
-        .theme-air { --glow: #f5f5f5; }
-        .theme-void { --glow: #8a2be2; animation: void-pulse 5s infinite; }
+        .theme-void { --glow: #8a2be2; }
 
-        @keyframes void-pulse { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(45deg) brightness(1.5); } }
-
-        /* CRT Noise Overlay */
+        /* CRT EFFECTS */
         .crt::before {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
@@ -47,28 +49,51 @@
 </head>
 <body class="theme-void">
     <div class="crt hud-container">
-        <div class="border-top"></div>
         <div class="intent-portal">
-            <span class="label">NEURAL_OBJECTIVE_ESTABLISHED</span>
-            <span id="hud-intent">AWAITING_INPUT</span>
+            <span id="hud-intent">READY_FOR_WARP</span>
         </div>
-        <div class="border-bottom"></div>
+
+        <div class="sidebar">
+            <div class="data-point">
+                <span class="data-label">PILOT_ID</span>
+                <span class="data-value" id="pilot-id">GUEST_USER</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">CHRONO_SYNC</span>
+                <span class="data-value" id="clock">00:00:00</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">SYSTEM_STATUS</span>
+                <span class="data-value" style="color: #48c774;">OPTIMAL</span>
+            </div>
+            <div class="data-point">
+                <span class="data-label">ENVIRONMENT</span>
+                <span class="data-value" id="env-type">VOID</span>
+            </div>
+        </div>
     </div>
 
     <script>
         var activeMusic = "CAS";
         var missionSuccessDetected = false;
+        
         const musicMap = {
             "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
             "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
             "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
         };
 
+        // Live Clock logic
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+
         function checkSignal() {
             if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
                 missionSuccessDetected = true;
-                let target = musicMap[activeMusic] || activeMusic;
-                window.open(target, '_blank');
+                window.open(musicMap[activeMusic] || activeMusic, '_blank');
             }
         }
         setInterval(checkSignal, 2000);
