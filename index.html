@@ -1,55 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CHRONOS_V38_HUD</title>
+    <title>CHRONOS_V38_SOVEREIGN_HUD</title>
     <style>
-        body { background: #020408; color: var(--glow, #8a2be2); font-family: 'Courier New', monospace; overflow: hidden; }
-        .hud { border: 2px solid var(--glow); height: 90vh; margin: 20px; padding: 20px; position: relative; transition: all 0.5s ease; }
-        .theme-fire { --glow: #ff3860; box-shadow: 0 0 20px #ff3860; }
-        .theme-water { --glow: #3273dc; box-shadow: 0 0 20px #3273dc; }
-        .theme-void { --glow: #8a2be2; box-shadow: 0 0 20px #8a2be2; }
+        :root { --glow: #00d1b2; --bg: #020408; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: 'Courier New', monospace; height: 100%; overflow: hidden; }
         
-        /* The Intent Portal */
-        .intent-portal { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); font-size: 1.5rem; text-align: center; }
-        #hud-intent { color: #fff; text-shadow: 0 0 10px var(--glow); display: block; margin-top: 10px; }
+        /* The Elemental Canvas */
+        .hud { border: 4px solid var(--glow); height: 92vh; margin: 2vh; position: relative; transition: all 1s ease; overflow: hidden; }
         
-        .vortex-active { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        /* THEMES */
+        .theme-fire { --glow: #ff3860; animation: fire-flicker 0.2s infinite; }
+        .theme-water { --glow: #3273dc; animation: water-drift 4s infinite ease-in-out; }
+        .theme-earth { --glow: #48c774; border-width: 10px; }
+        .theme-air { --glow: #00d1b2; opacity: 0.8; animation: air-float 6s infinite; }
+        .theme-void { --glow: #8a2be2; animation: void-glitch 1s infinite; }
+
+        /* ANIMATION KEYFRAMES */
+        @keyframes fire-flicker {
+            0% { box-shadow: 0 0 10px #ff3860, inset 0 0 10px #ff3860; }
+            50% { box-shadow: 0 0 30px #ff3860, inset 0 0 20px #ff3860; }
+            100% { box-shadow: 0 0 15px #ff3860, inset 0 0 12px #ff3860; }
+        }
+        @keyframes water-drift {
+            0%, 100% { border-radius: 0% 0% 0% 0%; transform: scale(1); }
+            50% { border-radius: 5% 2% 8% 3%; transform: scale(1.01); }
+        }
+        @keyframes air-float {
+            0%, 100% { transform: translateY(0); filter: blur(0px); }
+            50% { transform: translateY(-10px); filter: blur(1px); }
+        }
+        @keyframes void-glitch {
+            0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+            10% { transform: translate(-2px, 2px); clip-path: inset(20% 0 10% 0); }
+            20% { transform: translate(2px, -2px); clip-path: inset(0 15% 30% 0); }
+            30% { transform: translate(0); }
+        }
+
+        /* Intent Portal */
+        .intent-portal { position: absolute; top: 40%; width: 100%; text-align: center; z-index: 10; }
+        #hud-intent { font-size: 3rem; font-weight: bold; letter-spacing: 5px; text-transform: uppercase; display: block; }
+        .label { font-size: 0.8rem; opacity: 0.5; }
+
     </style>
 </head>
-<body class="hud theme-water vortex-active">
+<body class="hud theme-water">
     <div class="intent-portal">
-        [ CURRENT_MISSION ]
+        <span class="label">NEURAL_OBJECTIVE</span>
         <span id="hud-intent">goal</span>
     </div>
 
     <script>
-        // --- SOVEREIGN HUD STATE ---
-        var activeMusic = "CAS"; 
+        var activeMusic = "CAS";
         var missionSuccessDetected = false;
-
         const musicMap = {
             "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
             "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
             "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
         };
 
-        function playAutomatedMusic() {
-            let targetUrl = musicMap[activeMusic] || activeMusic;
-            console.log("SYSTEM: Launching " + activeMusic + " stream...");
-            window.open(targetUrl, '_blank');
-        }
-
-        // Monitors the body for the success signal appended by the Bot
         function watchForWarpCompletion() {
             if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
                 missionSuccessDetected = true;
-                playAutomatedMusic();
+                let url = musicMap[activeMusic] || activeMusic;
+                window.open(url, '_blank');
             }
         }
-
         setInterval(watchForWarpCompletion, 2000);
-        console.log("IROH_HUD: Systems Online.");
     </script>
 </body>
 </html>
