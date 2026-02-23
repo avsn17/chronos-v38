@@ -1,42 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CHRONOS_SOVEREIGN_V3</title>
+    <meta charset="UTF-8">
+    <title>CHRONOS_ZENITH_HUD</title>
     <style>
-        :root { --glow: #00d1b2; --bg: #010204; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
+        :root { --glow: #00d1b2; --bg: #05070a; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--glow); font-family: 'Inter', 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
-        .hud { border: 2px solid var(--glow); height: 94vh; margin: 3vh; position: relative; transition: all 1s ease; background: radial-gradient(circle at center, #0a0c12 0%, #010204 100%); }
+        /* The Sovereign Frame */
+        .hud { 
+            border: 1px solid rgba(255,255,255,0.1); 
+            height: 94vh; margin: 3vh; position: relative; 
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: radial-gradient(circle at center, rgba(10, 12, 18, 0.8) 0%, #05070a 100%);
+            backdrop-filter: blur(10px);
+        }
         
         /* THEME OVERLAYS */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.3; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         
-        /* FIRE: Rising Embers */
-        .theme-fire { --glow: #ff3860; box-shadow: 0 0 50px #ff386055; }
-        .theme-fire .overlay { background: linear-gradient(0deg, #ff386033 0%, transparent 100%); animation: embers 1s infinite alternate; }
-        
-        /* WATER: Deep Sea Ripple */
-        .theme-water { --glow: #3273dc; box-shadow: 0 0 50px #3273dc55; }
-        .theme-water .overlay { background: repeating-linear-gradient(45deg, #3273dc11 0px, transparent 100px); animation: ripple 10s infinite linear; }
-        
-        /* VOID: Static & Glitch */
-        .theme-void { --glow: #8a2be2; }
-        .theme-void .overlay { background-image: url('https://media.giphy.com/media/oEI9uWUicG7vA6RWZ0/giphy.gif'); opacity: 0.05; }
+        .theme-fire { --glow: #ff3860; box-shadow: inset 0 0 100px rgba(255, 56, 96, 0.2); }
+        .theme-water { --glow: #3273dc; box-shadow: inset 0 0 100px rgba(50, 115, 220, 0.2); }
+        .theme-air { --glow: #00d1b2; box-shadow: inset 0 0 100px rgba(0, 209, 178, 0.2); }
+        .theme-void { --glow: #8a2be2; filter: contrast(1.2) saturate(1.2); }
 
-        @keyframes embers { from { opacity: 0.2; } to { opacity: 0.5; } }
-        @keyframes ripple { from { background-position: 0 0; } to { background-position: 500px 500px; } }
+        /* The Intent Portal (Stylish Glass-morphism) */
+        .intent-portal { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 80%; text-align: center; z-index: 10; 
+        }
+        #hud-intent { 
+            font-size: 5rem; font-weight: 900; text-transform: uppercase; 
+            letter-spacing: -2px; color: #fff; 
+            text-shadow: 0 0 30px var(--glow); 
+            display: block; opacity: 0.9;
+        }
+        .status-tag { 
+            display: inline-block; padding: 4px 12px; background: var(--glow); 
+            color: #000; font-size: 0.7rem; font-weight: bold; margin-bottom: 20px;
+        }
 
-        .intent-portal { position: absolute; top: 45%; width: 100%; text-align: center; z-index: 10; letter-spacing: 10px; }
-        #hud-intent { font-size: 4rem; text-transform: uppercase; text-shadow: 0 0 20px var(--glow); display: block; }
-        
-        /* Scanline Effect */
-        .hud::after { content: " "; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        /* Glitch Effect for VOID */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+        .vortex-active { animation: glitch 0.3s infinite; }
+
+        /* Scanlines */
+        .scanline { width: 100%; height: 2px; background: rgba(255,255,255,0.03); position: absolute; animation: scan 4s linear infinite; z-index: 5; }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
-<body class="hud theme-2">
+<body class="hud theme-water">
+    <div class="scanline"></div>
     <div class="overlay"></div>
     <div class="intent-portal">
-        <span style="font-size: 0.7rem; opacity: 0.4;">NEURAL LINK ESTABLISHED</span>
+        <div class="status-tag">NEURAL_LINK_ACTIVE</div>
         <span id="hud-intent">goal</span>
     </div>
 
@@ -51,32 +75,11 @@
 
         function checkSignal() {
                 missionSuccessDetected = true;
-                window.open(musicMap[activeMusic] || activeMusic, '_blank');
+                let target = musicMap[activeMusic] || activeMusic;
+                window.open(target, '_blank');
             }
-        
+        }
         setInterval(checkSignal, 2000);
     </script>
 </body>
 </html>
-<script>
-    var activeMusic = "CAS";
-    var missionSuccessDetected = false;
-    
-    const musicMap = {
-        "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
-        "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
-        "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
-    };
-
-    function checkSignal() {
-        if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
-            missionSuccessDetected = true;
-            
-            // Check if activeMusic is a preset key or a direct URL
-            let target = musicMap[activeMusic] || activeMusic;
-            
-            window.open(target, '_blank');
-        }
-    }
-    setInterval(checkSignal, 2000);
-</script>
