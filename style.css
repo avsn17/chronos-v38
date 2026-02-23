@@ -60,3 +60,57 @@
 .low-power .timer-display {
     animation: warningPulse 0.5s ease-in-out infinite;
 }
+/* --- IROH'S SPIRITUAL ANIMATION CORE --- */
+
+/* 1. THE JASMINE BREATH (Global Pulse) */
+.hud {
+    animation: jasmineBreath 8s ease-in-out infinite;
+}
+@keyframes jasmineBreath {
+    0%, 100% { opacity: 0.95; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.005); }
+}
+
+/* 2. THE DRAGON'S BREATH (Fire Theme) */
+.theme-fire .twirl-overlay {
+    border-color: var(--red);
+    filter: blur(2px);
+    animation: heatHaze 0.5s infinite alternate, spin 10s linear infinite;
+}
+@keyframes heatHaze {
+    from { opacity: 0.2; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0.4; transform: translate(-50%, -50%) scale(1.05) skewX(2deg); }
+}
+
+/* 3. THE NORTHERN RIPPLE (Water Theme) */
+.theme-water .panel {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 70%;
+    animation: waterMorph 10s linear infinite;
+}
+@keyframes waterMorph {
+    0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 70%; }
+    50% { border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%; }
+}
+
+/* 4. THE MOUNTAIN'S SHADOW (Earth Theme) */
+.theme-earth .timer-display {
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.9), 0 0 20px var(--glow);
+    animation: earthTremor 10s infinite;
+}
+@keyframes earthTremor {
+    0%, 95%, 100% { transform: translate(0,0); }
+    97% { transform: translate(1px, 1px); }
+    99% { transform: translate(-1px, -1px); }
+}
+
+/* 5. THE SPIRIT VORTEX (Void/Twirl Mode) */
+.vortex-active .twirl-overlay {
+    border-style: double;
+    border-width: 4px;
+    animation: spiritTwirl 15s linear infinite;
+}
+@keyframes spiritTwirl {
+    0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+    50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.2); filter: hue-rotate(180deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); filter: hue-rotate(360deg); }
+}
