@@ -7,44 +7,41 @@ GOLD='\033[0;33m'
 RED='\033[0;31m'
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
+PURPLE='\033[0;35m'
 NC='\033[0m'
 
 function iroh_say() { echo -e "\n${GOLD}[IROH]: $1${NC}"; }
 
-# --- ANIMATION: SPIRIT CASCADE (Final 60s) ---
+# --- ANIMATION: SPIRIT CASCADE ---
 function draw_cascade() {
-    local chars=("0" "1" " " " " " " " " "茶" "🍵" "spirit" "void")
+    local chars=("茶" "🍵" "☯" "✧" "⚡" "0" "1" "SYSTEM" "VOID")
     local output=""
-    for i in {1..5}; do
+    for i in {1..8}; do
         output+="${chars[$RANDOM % ${#chars[@]}]} "
     done
-    echo -ne "${GREEN}$output${NC}"
-}
-
-# --- ANIMATION: VORTEX SPINNER ---
-function draw_vortex() {
-    local frames=('—' '\\' '|' '/')
-    echo -ne "${CYAN}${frames[$1 % 4]}${NC}"
+    echo -ne "${PURPLE}$output${NC}"
 }
 
 # --- ANIMATION: BREATHING LUNGS ---
 function draw_lungs() {
     local pulse=$(( ($1 % 10) ))
     [ $pulse -gt 5 ] && pulse=$(( 10 - pulse ))
-    echo -ne "["
-    for ((i=0; i<pulse+3; i++)); do echo -ne "—"; done
-    echo -ne " 🔥 "
-    for ((i=0; i<pulse+3; i++)); do echo -ne "—"; done
-    echo -ne "]"
+    local color=$CYAN
+    [ $1 -le 300 ] && color=$RED # Turn red in final 5 mins
+    echo -ne "${color}["
+    for ((i=0; i<pulse+4; i++)); do echo -ne "—"; done
+    echo -ne " 🫖 "
+    for ((i=0; i<pulse+4; i++)); do echo -ne "—"; done
+    echo -ne "]${NC}"
 }
 
 clear
-iroh_say "The tea is at the perfect temperature. Welcome, Pilot."
-read -p "IDENTIFY FOR LOGS: " PILOT_NAME
+iroh_say "The workspace is an extension of the soul. Identify yourself, Pilot."
+read -p ">> " PILOT_NAME
 
 while true; do
     iroh_say "1) CAS | 2) LANA | 3) BEEGEES | 4) URL | [S] STATS | [Q] QUIT"
-    read -p ">> " VIBE
+    read -p "VIBE >> " VIBE
     case $VIBE in
         1) MUSIC="CAS" ;; 2) MUSIC="LANA" ;; 3) MUSIC="BEEGEES" ;; 4) read -p "URL: " MUSIC ;;
         [Ss]*) pkill -f http.server; python3 -m http.server 8080 & iroh_say "Dashboard: http://localhost:8080/stats.html"; continue ;;
@@ -53,42 +50,42 @@ while true; do
     esac
 
     iroh_say "Element: FIRE / WATER / EARTH / AIR / VOID"
-    read -p ">> " THEME
+    read -p "ELEMENT >> " THEME
     THEME=${THEME^^}
 
-    # Inject to HUD
+    iroh_say "What is your focus intent?"
+    read -p "INTENT >> " AIM
+
+    # --- DEEP INJECTION INTO HUD ---
+    # This pushes your actual text goal onto the HUD screen
     sed -i "s/var activeMusic = \".*\";/var activeMusic = \"$MUSIC\";/" $HUD_FILE 2>/dev/null
     sed -i "s/class=\"hud .*\"/class=\"hud theme-${THEME,,} vortex-active\"/" $HUD_FILE 2>/dev/null
+    sed -i "s/id=\"hud-intent\">.*</id=\"hud-intent\">$AIM</" $HUD_FILE 2>/dev/null
 
-    iroh_say "Intent for this $THEME warp?"
-    read -p ">> " AIM
-
-    # --- THE IMMERSIVE TIMER ---
+    # --- THE TIMER ---
     seconds=$(( 25 * 60 ))
     while [ $seconds -gt 0 ]; do
         mins=$((seconds / 60))
         secs=$((seconds % 60))
         
-        vortex=$(draw_vortex $seconds)
-        
         if [ $seconds -le 60 ]; then
-            # FINAL MINUTE: Spirit Cascade Effect
+            # FINAL MINUTE: Spirit Cascade
             cascade=$(draw_cascade)
-            printf "\r${GOLD}[$vortex]${NC} %02d:%02d | ${GREEN}TRANSITIONING...${NC} | $cascade " "$mins" "$secs"
+            printf "\r${PURPLE}[⚡]${NC} %02d:%02d | ${PURPLE}THE VEIL THINS${NC} | $cascade " "$mins" "$secs"
         else
-            # STANDARD FOCUS: Breathing Bar
+            # FOCUSING: Breathing Lungs
             lungs=$(draw_lungs $seconds)
-            printf "\r${GOLD}[$vortex]${NC} %02d:%02d $lungs ${RED}WARP_DRIVE${NC} | $AIM " "$mins" "$secs"
+            printf "\r${GOLD}[~]${NC} %02d:%02d $lungs | ${CYAN}$THEME ENERGY${NC} | Goal: $AIM " "$mins" "$secs"
         fi
         
         sleep 1
         : $((seconds--))
     done
 
-    # --- SUCCESS RITUAL ---
+    # --- LOGGING & AUTO-PLAY ---
     echo "{\"date\":\"$(date)\", \"pilot\":\"$PILOT_NAME\", \"aim\":\"$AIM\", \"element\":\"$THEME\"}" >> $STATS_FILE
     echo "MISSION_SUCCESS" >> $HUD_FILE
     
-    iroh_say "Warp successful. The veil has lifted. Enjoy the music."
-    echo -e "${CYAN}--------------------------------------------------${NC}"
+    iroh_say "Tea is poured. Music is live. Rest your mind, $PILOT_NAME."
+    echo -e "${PURPLE}==================================================${NC}"
 done
