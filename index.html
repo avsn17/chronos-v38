@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHRONOS_V38_SOVEREIGN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020408;
+    --panel: rgba(0,255,180,0.03);
+    --border: rgba(0,255,180,0.15);
+    --glow: #00ffb4;
+    --glow2: #00c8ff;
+    --text: #a0ffdc;
+    --dim: #3a6655;
+    --red: #ff3860;
+    --amber: #ffb700;
+    --white: #e8fff8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* --- CRT EFFECTS --- */
+  body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    z-index: 10;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+  }
+
+  @keyframes flicker {
+    0% { opacity: 0.9; } 5% { opacity: 0.8; } 10% { opacity: 0.95; } 100% { opacity: 0.9; }
+  }
+
+  .hud {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: flicker 0.1s infinite;
+  }
+
+  /* Low Power State */
+  .low-power {
+    filter: sepia(0.8) saturate(2) hue-rotate(-50deg);
+    transition: all 2s ease;
+  }
+
+  /* --- GLOBE & STARS --- */
+  #stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+  .star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; }
+
+  /* --- UI COMPONENTS --- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 15px;
+    backdrop-filter: blur(4px);
+    position: relative;
+  }
+
+  .panel-title { font-family: 'Orbitron'; font-size: 9px; color: var(--dim); margin-bottom: 10px; letter-spacing: 2px; }
+
+  .timer-display {
+    font-family: 'Orbitron';
+    font-size: 72px;
+    text-align: center;
+    color: var(--white);
+    text-shadow: 0 0 20px var(--glow2);
+  }
+
+  .warp-btn {
+    width: 100%; padding: 15px; background: transparent; 
+    border: 2px solid var(--glow); color: var(--glow);
+    font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
+  }
+
+  .warp-btn.engaged { border-color: var(--red); color: var(--red); }
+
+  .logbook { height: 120px; overflow-y: auto; font-size: 10px; color: var(--text); border-top: 1px solid var(--border); }
+  .log-entry { margin-top: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+  .pilot-input {
+    background: transparent; border: none; border-bottom: 1px solid var(--glow);
+    color: var(--white); font-family: 'Orbitron'; width: 100%; outline: none;
+  }
+
+  .stream-item { padding: 8px; border: 1px solid var(--border); margin-top: 5px; cursor: pointer; font-size: 11px; }
+  .stream-item.playing { background: rgba(0,255,180,0.1); border-color: var(--glow); }
+
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div class="hud" id="hudFrame">
+  <div style="grid-column: 1/-1; display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:5px;">
+    <span style="font-family:'Orbitron'; font-size:10px;">CHRONOS_V38_SOVEREIGN</span>
+    <span id="sysTime">SYS_TIME: --:--:--</span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">PILOT_ID</div>
+    <input type="text" id="pilotInput" class="pilot-input" placeholder="CALLSIGN" oninput="savePilot(this.value)">
+    <div style="margin-top:15px; font-size:12px;">
+      <div>SESSIONS: <span id="sessionCount" style="color:var(--glow)">0</span></div>
+      <div>TOTAL_MIN: <span id="minuteCount" style="color:var(--glow)">0</span></div>
+      <div>STATUS: <span id="pilotStatus" style="color:var(--glow2)">STANDBY</span></div>
+    </div>
+    
+    <div class="panel-title" style="margin-top:20px;">NEURAL_STREAM</div>
+    <div class="stream-item" id="stream-0" onclick="selectStream(0)">NIGHTRIDE FM</div>
+    <div class="stream-item" id="stream-1" onclick="selectStream(1)">LANA DEL REY MIX</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <button class="warp-btn" id="warpBtn" onclick="toggleWarp()">ENGAGE_WARP</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">IROH_WISDOM</div>
+    <div id="irohBox" style="font-style:italic; font-size:12px; min-height:50px; color:var(--amber);">Tea is just hot leaf juice...</div>
+    <button onclick="consultIroh()" style="width:100%; background:transparent; border:1px solid var(--amber); color:var(--amber); margin-top:10px; cursor:pointer;">CONSULT</button>
+    
+    <div class="panel-title" style="margin-top:20px;">FLIGHT_LOG</div>
+    <div class="logbook" id="logbook"></div>
+  </div>
+</div>
+
+<script>
+  let timerInterval = null;
+  let secondsLeft = 25 * 60;
+  let isRunning = false;
+  let currentStream = -1;
+
+  // Persistent Data
+  let sessionCount = parseInt(localStorage.getItem('sv38_sessions') || '0');
+  let minuteCount = parseInt(localStorage.getItem('sv38_minutes') || '0');
+  let pilotName = localStorage.getItem('sv38_pilot') || "";
+
+  const streams = [
+    { name: 'NIGHTRIDE FM', url: 'https://www.youtube.com/watch?v=UjlMEqTu2KI' },
+    { name: 'LANA DEL REY MIX', url: 'https://www.youtube.com/watch?v=VFTMHqPFKkQ' }
+  ];
+
+  window.onload = () => {
+    document.getElementById('sessionCount').textContent = sessionCount;
+    document.getElementById('minuteCount').textContent = minuteCount;
+    document.getElementById('pilotInput').value = pilotName;
+    addLog("SYSTEM_BOOT: OS v38.0.1 Stable");
+    createStars();
+  };
+
+  function savePilot(val) { localStorage.setItem('sv38_pilot', val.toUpperCase()); }
+
+  function toggleWarp() {
+    if (!isRunning) startWarp();
+    else stopWarp();
+  }
+
+  function startWarp() {
+    isRunning = true;
+    document.getElementById('warpBtn').textContent = 'ABORT_WARP';
+    document.getElementById('warpBtn').classList.add('engaged');
+    document.getElementById('pilotStatus').textContent = 'IN_WARP';
+    addLog("WARP_ENGAGED: Hyper-focus protocol.");
+
+    timerInterval = setInterval(() => {
+      secondsLeft--;
+      document.getElementById('timerDisplay').textContent = formatTime(secondsLeft);
+      
+      if (secondsLeft === 60) {
+        document.getElementById('hudFrame').classList.add('low-power');
+        addLog("WARNING: Low power mode.");
+      }
+      
+      if (secondsLeft <= 0) warpComplete();
+    }, 1000);
+  }
+
+  function warpComplete() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    sessionCount++;
+    minuteCount += 25;
+    localStorage.setItem('sv38_sessions', sessionCount);
+    localStorage.setItem('sv38_minutes', minuteCount);
+    
+    document.getElementById('sessionCount').textContent = sessionCount;
+    document.getElementById('minuteCount').textContent = minuteCount;
+    
+    addLog(`MISSION_SUCCESS: Session #${sessionCount} complete.`);
+    resetHUD();
+    
+    // Autoplay trigger
+    const playIdx = currentStream === -1 ? 0 : currentStream;
+    selectStream(playIdx);
+  }
+
+  function resetHUD() {
+    secondsLeft = 25 * 60;
+    document.getElementById('timerDisplay').textContent = "25:00";
+    document.getElementById('warpBtn').textContent = 'ENGAGE_WARP';
+    document.getElementById('warpBtn').classList.remove('engaged');
+    document.getElementById('hudFrame').classList.remove('low-power');
+    document.getElementById('pilotStatus').textContent = 'STANDBY';
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s/60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+  }
+
+  function selectStream(idx) {
+    currentStream = idx;
+    document.querySelectorAll('.stream-item').forEach(el => el.classList.remove('playing'));
+    document.getElementById(`stream-${idx}`).classList.add('playing');
+    window.open(streams[idx].url, '_blank');
+    addLog(`STREAM_LOCKED: ${streams[idx].name}`);
+  }
+
+  function addLog(msg) {
+    const lb = document.getElementById('logbook');
+    const time = new Date().toLocaleTimeString();
+    lb.innerHTML = `<div class="log-entry">[${time}] ${msg}</div>` + lb.innerHTML;
+  }
+
+  function consultIroh() {
+    const quotes = ["Destiny is a funny thing.", "Tea is hot leaf juice.", "Hope is something you give yourself."];
+    document.getElementById('irohBox').textContent = quotes[Math.floor(Math.random()*quotes.length)];
+    addLog("IROH_ADVICE: Received.");
+  }
+
+  function createStars() {
+    const container = document.getElementById('stars');
+    for(let i=0; i<100; i++) {
+      let s = document.createElement('div');
+      s.className = 'star';
+      s.style.width = s.style.height = Math.random()*3+'px';
+      s.style.left = Math.random()*100+'%';
+      s.style.top = Math.random()*100+'%';
+      container.appendChild(s);
+    }
+  }
+
+  setInterval(() => {
+    document.getElementById('sysTime').textContent = "SYS_TIME: " + new Date().toLocaleTimeString();
+  }, 1000);
+</script>
+</body>
+</html>
