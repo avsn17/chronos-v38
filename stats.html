@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IROH_SPIRIT_DASHBOARD</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glow: #8a2be2; /* Spirit Purple */
+            --bg: #020408;
+            --panel: rgba(138, 43, 226, 0.05);
+        }
+        body {
+            background: var(--bg);
+            color: #a0ffdc;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { font-family: 'Orbitron'; color: var(--glow); text-shadow: 0 0 20px var(--glow); margin-bottom: 30px; }
+        .dashboard-container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--panel);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        .back-btn {
+            margin-top: 20px;
+            color: var(--glow);
+            text-decoration: none;
+            border: 1px solid var(--glow);
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: var(--glow); color: white; }
+    </style>
+</head>
+<body>
+
+    <h1>SPIRIT WORLD REFLECTION</h1>
+    
+    <div class="dashboard-container">
+        <canvas id="statsChart"></canvas>
+    </div>
+
+    <a href="index.html" class="back-btn">RETURN TO HUD</a>
+
+    <script>
+        async function loadStats() {
+            try {
+                // Fetch the JSON log created by the Iroh Bot
+                const response = await fetch('pilot_history.json');
+                const data = await response.json();
+
+                // Process data for the chart
+                const labels = data.map(entry => entry.date || "Unknown");
+                const sessionCounts = data.map((_, index) => index + 1);
+
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Focus Intensity',
+                            data: sessionCounts,
+                            borderColor: '#8a2be2',
+                            backgroundColor: 'rgba(138, 43, 226, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#00ffb4'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                            x: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#a0ffdc', font: { family: 'Orbitron' } } }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("The scrolls are unreadable. Ensure pilot_history.json exists.", e);
+            }
+        }
+        loadStats();
+    </script>
+</body>
+</html>
