@@ -1,258 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHRONOS_V38_SOVEREIGN</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #020408;
-    --panel: rgba(0,255,180,0.03);
-    --border: rgba(0,255,180,0.15);
-    --glow: #48c774; /* Default Earth Green */
-    --glow2: #00c8ff;
-    --text: #a0ffdc;
-    --dim: #3a6655;
-    --red: #ff3860;
-    --amber: #ffb700;
-    --white: #e8fff8;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    overflow: hidden;
-    position: relative;
-  }
-
-  /* --- CRT & VORTEX EFFECTS --- */
-  body::after {
-    content: " ";
-    display: block;
-    position: fixed;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    z-index: 10;
-    background-size: 100% 4px, 3px 100%;
-    pointer-events: none;
-    animation: flicker 0.15s infinite;
-  }
-
-  @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 0.85; } 100% { opacity: 0.9; } }
-
-  /* 🌀 THE TWIRLING AURA (Orbital Movement) */
-  .twirl-overlay {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px; height: 600px;
-    border: 1px solid var(--glow);
-    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-    animation: morph 8s linear infinite, spin 20s linear infinite;
-    opacity: 0.2;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-  @keyframes morph {
-    0%, 100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
-    50% { border-radius: 26% 74% 42% 58% / 57% 51% 49% 43%; }
-  }
-
-  /* --- ELEMENTAL THEMES --- */
-  .theme-fire { filter: drop-shadow(0 0 15px var(--red)); animation: firePulse 2s infinite alternate; }
-  @keyframes firePulse { 0% { brightness: 1; } 100% { brightness: 1.4; } }
-
-  .theme-air { animation: airFloat 4s ease-in-out infinite; }
-  @keyframes airFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-  .theme-water .timer-display { animation: rippleTwirl 3s ease-in-out infinite; }
-  @keyframes rippleTwirl { 0%, 100% { transform: rotate(-1deg) scale(1); } 50% { transform: rotate(1deg) scale(1.05); } }
-
-  .theme-void { filter: hue-rotate(45deg) blur(0.5px); animation: voidBreathe 10s infinite; }
-  @keyframes voidBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-  .hud {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    grid-template-columns: 280px 1fr 280px;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-    padding: 20px;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .timer-display {
-    font-family: 'Orbitron';
-    font-size: 82px;
-    text-align: center;
-    color: var(--white);
-    text-shadow: 0 0 30px var(--glow);
-    animation: spiralIn 1s ease-out;
-  }
-
-  @keyframes spiralIn { 0% { transform: rotate(-180deg) scale(0); opacity: 0; } 100% { transform: rotate(0) scale(1); opacity: 1; } }
-
-  .panel { background: var(--panel); border: 1px solid var(--border); padding: 15px; backdrop-filter: blur(8px); }
-  .panel-title { font-family: 'Orbitron'; font-size: 10px; color: var(--glow); margin-bottom: 10px; letter-spacing: 2px; }
-  .warp-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--glow); color: var(--glow); font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
-  .warp-btn:hover { background: var(--glow); color: var(--bg); }
-  .warp-btn.engaged { border-color: var(--red); color: var(--red); }
-  .logbook { height: 150px; overflow-y: auto; font-size: 11px; }
-  .pilot-input { background: transparent; border: none; border-bottom: 1px solid var(--glow); color: var(--white); font-family: 'Orbitron'; width: 100%; outline: none; }
-</style>
+    <title>CHRONOS_V38_HUD</title>
+    <style>
+        body { background: #020408; color: var(--glow, #8a2be2); font-family: 'Courier New', monospace; overflow: hidden; }
+        .hud { border: 2px solid var(--glow); height: 90vh; margin: 20px; padding: 20px; position: relative; transition: all 0.5s ease; }
+        .theme-fire { --glow: #ff3860; box-shadow: 0 0 20px #ff3860; }
+        .theme-water { --glow: #3273dc; box-shadow: 0 0 20px #3273dc; }
+        .theme-void { --glow: #8a2be2; box-shadow: 0 0 20px #8a2be2; }
+        
+        /* The Intent Portal */
+        .intent-portal { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); font-size: 1.5rem; text-align: center; }
+        #hud-intent { color: #fff; text-shadow: 0 0 10px var(--glow); display: block; margin-top: 10px; }
+        
+        .vortex-active { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+    </style>
 </head>
-<body>
-
-<div id="stars"></div>
-<div class="twirl-overlay"></div>
-
-<div class="hud theme-water vortex-active">
-  <div style="grid-column: 1/-1; display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:5px;">
-    <span style="font-family:'Orbitron'; font-size:10px;">CHRONOS_V38_SOVEREIGN</span>
-    <span id="sysTime">SYS_TIME: --:--:--</span>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">PILOT_ID</div>
-    <input type="text" id="pilotInput" class="pilot-input" value="TRAVELER | EARTH" readonly>
-    <div style="margin-top:15px; font-size:12px;">
-      <div>SESSIONS: <span id="sessionCount">0</span></div>
-      <div>MINUTES: <span id="minuteCount">0</span></div>
-      <div>STATUS: <span id="pilotStatus" style="color:var(--glow)">STANDBY</span></div>
+<body class="hud theme-void">
+    <div class="intent-portal">
+        [ CURRENT_MISSION ]
+        <span id="hud-intent">Awaiting Warp...</span>
     </div>
-    
-    <div class="panel-title" style="margin-top:20px;">NEURAL_STREAM</div>
-    <div onclick="selectStream(0)" style="cursor:pointer; padding:5px; border:1px solid var(--border); margin-bottom:5px;">NIGHTRIDE FM</div>
-    <div onclick="selectStream(1)" style="cursor:pointer; padding:5px; border:1px solid var(--border);">LANA DEL REY MIX</div>
-  </div>
 
-  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-    <div class="timer-display" id="timerDisplay">25:00</div>
-    <button class="warp-btn" id="warpBtn" onclick="toggleWarp()">ENGAGE_WARP</button>
-  </div>
+    <script>
+        // --- SOVEREIGN HUD STATE ---
+        var activeMusic = "CAS"; 
+        var missionSuccessDetected = false;
 
-  <div class="panel">
-    <div class="panel-title">IROH_WISDOM</div>
-    <div id="irohBox" style="font-style:italic; font-size:13px; color:var(--amber);">Destiny is a funny thing...</div>
-    <div class="panel-title" style="margin-top:25px;">FLIGHT_LOG</div>
-    <div class="logbook" id="logbook"></div>
-  </div>
-</div>
+        const musicMap = {
+            "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
+            "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
+            "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
+        };
 
-<script>
-  let secondsLeft = 25 * 60;
-  let isRunning = false;
-  let timerInterval = null;
+        function playAutomatedMusic() {
+            let targetUrl = musicMap[activeMusic] || activeMusic;
+            console.log("SYSTEM: Launching " + activeMusic + " stream...");
+            window.open(targetUrl, '_blank');
+        }
 
-  window.onload = () => {
-    document.getElementById('sessionCount').innerText = localStorage.getItem('sv38_sessions') || 0;
-    document.getElementById('minuteCount').innerText = localStorage.getItem('sv38_minutes') || 0;
-    addLog("SYSTEM_BOOT: OS v38.0.1 Stable");
-    createStars();
-  };
+        // Monitors the body for the success signal appended by the Bot
+        function watchForWarpCompletion() {
+            if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
+                missionSuccessDetected = true;
+                playAutomatedMusic();
+            }
+        }
 
-  function toggleWarp() {
-    if (!isRunning) {
-        isRunning = true;
-        document.getElementById('warpBtn').innerText = "ABORT_WARP";
-        document.getElementById('warpBtn').classList.add('engaged');
-        timerInterval = setInterval(updateTimer, 1000);
-    } else {
-        clearInterval(timerInterval);
-        isRunning = false;
-        document.getElementById('warpBtn').innerText = "ENGAGE_WARP";
-        document.getElementById('warpBtn').classList.remove('engaged');
-    }
-  }
-
-  function updateTimer() {
-    secondsLeft--;
-    document.getElementById('timerDisplay').innerText = formatTime(secondsLeft);
-    if (secondsLeft <= 0) {
-        clearInterval(timerInterval);
-        completeSession();
-    }
-  }
-
-  function completeSession() {
-    let s = parseInt(localStorage.getItem('sv38_sessions') || 0) + 1;
-    let m = parseInt(localStorage.getItem('sv38_minutes') || 0) + 25;
-    localStorage.setItem('sv38_sessions', s);
-    localStorage.setItem('sv38_minutes', m);
-    addLog("MISSION_SUCCESS: Session Logged.");
-    window.open("https://www.youtube.com/watch?v=UjlMEqTu2KI", "_blank"); // Autoplay Trigger
-  }
-
-  function formatTime(s) {
-    let m = Math.floor(s / 60);
-    let sec = s % 60;
-    return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-  }
-
-  function addLog(msg) {
-    const lb = document.getElementById('logbook');
-    lb.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + lb.innerHTML;
-  }
-
-  function createStars() {
-    const container = document.getElementById('stars');
-    for(let i=0; i<80; i++) {
-      let s = document.createElement('div');
-      s.style.position = "absolute";
-      s.style.width = "2px"; s.style.height = "2px";
-      s.style.background = "white";
-      s.style.left = Math.random() * 100 + "%";
-      s.style.top = Math.random() * 100 + "%";
-      s.style.opacity = Math.random();
-      container.appendChild(s);
-    }
-  }
-
-  setInterval(() => { document.getElementById('sysTime').innerText = "SYS_TIME: " + new Date().toLocaleTimeString(); }, 1000);
-</script>
+        setInterval(watchForWarpCompletion, 2000);
+        console.log("IROH_HUD: Systems Online.");
+    </script>
 </body>
 </html>
-// Add this to your index.html <script>
-var activeMusic = "CAS"; // Managed by Iroh Bot
-
-function handleMusicAutoplay() {
-    const musicLibrary = {
-        "CAS": "https://www.youtube.com/watch?v=L4vP7T9KoMo",
-        "LANA": "https://www.youtube.com/watch?v=TdrL3QxjyVw",
-        "BEEGEES": "https://www.youtube.com/watch?v=I_izvAbhExY"
-    };
-
-    let url = musicLibrary[activeMusic] || activeMusic;
-    window.open(url, '_blank');
-}
-
-// Logic to check for "MISSION_SUCCESS" from the Bot
-// When the bot writes to index.html, JS detects and plays music
-function applyTemporalTheme() {
-    const hour = new Date().getHours();
-    const hud = document.getElementById('hudFrame');
-    
-    if (hour >= 21 || hour < 6) {
-        hud.style.filter = "hue-rotate(280deg) brightness(0.7)"; // Midnight Void
-        addLog("SYSTEM: Spirit Hour detected. Stability decreased.");
-    } else if (hour >= 17) {
-        hud.style.filter = "sepia(0.4) saturate(1.2)"; // Evening Tea
-    }
-}
-setInterval(applyTemporalTheme, 60000); // Check every minuteMISSION_SUCCESS
-<div class="intent-display">
-    <span class="label">CURRENT_GOAL:</span>
-    <span id="hud-intent">Awaiting Warp...</span>
-</div>
