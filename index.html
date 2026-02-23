@@ -2,107 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IROH_OS_V38</title>
+    <title>IROH_SOVEREIGN_V38_COLOR</title>
     <style>
         :root { 
-            --gold: #d4af37; 
-            --jade: #00a86b; 
-            --ink: #1a1a1a; 
-            --parchment: #f4e4bc;
-            --shadow: #000000;
+            --gold: #FFD700; --jade: #00FF9F; --pink: #FF007F; --blue: #00E5FF; --ink: #050505; 
         }
         
         body, html { 
-            margin: 0; padding: 0; 
-            background: var(--ink); 
-            color: var(--parchment); 
-            font-family: 'Courier New', Courier, monospace; 
-            height: 100vh; overflow: hidden; 
+            margin: 0; padding: 0; background: var(--ink); 
+            color: white; font-family: 'MS Sans Serif', 'Courier New', monospace; 
+            height: 100vh; display: flex; justify-content: center; align-items: center;
         }
 
-        /* 90s Windows-Style Frame */
+        /* Centered 90s Window */
         .window-frame {
-            border: 3px solid #777;
-            border-right-color: #333;
-            border-bottom-color: #333;
-            background: #c0c0c0; /* Classic Gray */
-            height: 96vh; margin: 1vh;
+            border: 4px solid #dfdfdf;
+            border-right-color: #808080; border-bottom-color: #808080;
+            background: #c0c0c0; width: 90vw; height: 85vh;
             display: flex; flex-direction: column;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.8);
+            box-shadow: 0 0 40px rgba(0,0,0,1), 20px 20px 0px rgba(0,0,0,0.3);
         }
 
         .title-bar {
             background: linear-gradient(90deg, #000080, #1084d0);
-            color: white; padding: 4px 10px; font-weight: bold;
+            color: white; padding: 6px 12px; font-weight: bold;
             display: flex; justify-content: space-between; align-items: center;
+            letter-spacing: 1px;
         }
 
-        /* The Internal "Monitor" Screen */
+        /* The Monitor - Hyper-Centered */
         .monitor-screen {
-            background: #050505;
-            flex-grow: 1; margin: 5px;
-            border: 4px inset #333;
-            position: relative;
-            display: flex; justify-content: center; align-items: center;
+            background: #000; flex-grow: 1; margin: 8px;
+            border: 6px inset #444; position: relative;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        /* THEMES (Retro-Glow) */
-        .theme-fire { --glow: #ff4500; }
-        .theme-water { --glow: #00ced1; }
-        .theme-earth { --glow: #8b4513; }
-        .theme-void { --glow: #9932cc; }
+        /* THEME COLOR ENGINE */
+        .theme-fire { --glow: var(--pink); --bg-glow: rgba(255, 0, 127, 0.1); }
+        .theme-water { --glow: var(--blue); --bg-glow: rgba(0, 229, 255, 0.1); }
+        .theme-earth { --glow: var(--jade); --bg-glow: rgba(0, 255, 159, 0.1); }
+        .theme-air { --glow: #FFFFFF; --bg-glow: rgba(255, 255, 255, 0.1); }
+        .theme-void { --glow: #BC13FE; --bg-glow: rgba(188, 19, 254, 0.1); }
 
-        /* Retro Intent Portal */
+        /* Centered Intent Portal */
         .intent-portal { text-align: center; z-index: 10; }
-        .retro-label { font-size: 0.8rem; background: var(--glow); color: black; padding: 2px 10px; margin-bottom: 20px; display: inline-block; }
+        .retro-tag { 
+            background: var(--glow); color: #000; font-weight: bold;
+            padding: 5px 20px; font-size: 0.9rem; margin-bottom: 30px; 
+            display: inline-block; box-shadow: 4px 4px 0px #000;
+        }
         #hud-intent { 
-            font-size: 6vw; font-weight: bold; text-transform: uppercase; 
-            color: var(--parchment); text-shadow: 4px 4px 0px var(--shadow), 0 0 20px var(--glow);
-            display: block; 
+            font-size: 8vw; font-weight: 900; text-transform: uppercase; 
+            color: #fff; text-shadow: 5px 5px 0px #000, 0 0 30px var(--glow);
+            display: block; line-height: 1;
         }
 
-        /* 90s Telemetry Sidebar */
-        .sidebar {
-            position: absolute; right: 15px; top: 15px; bottom: 15px;
-            width: 180px; border-left: 2px solid #333; padding-left: 15px;
-            background: rgba(20,20,20,0.8); font-size: 0.75rem;
+        /* Centered Stats Footer */
+        .telemetry-bar {
+            position: absolute; bottom: 20px; width: 100%;
+            display: flex; justify-content: center; gap: 40px;
+            font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px; color: var(--glow);
         }
-        .stat-box { border: 1px solid #444; padding: 8px; margin-bottom: 10px; background: #111; }
-        .stat-label { color: var(--gold); display: block; font-size: 0.6rem; }
+        .stat-item { text-align: center; }
+        .stat-label { display: block; font-size: 0.6rem; opacity: 0.7; color: #fff; margin-bottom: 4px; }
 
-        /* CRT Flicker Overlay */
-        .crt::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            z-index: 100; background-size: 100% 4px; pointer-events: none;
-            opacity: 0.2;
+        /* Scanline Overlay */
+        .crt-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 20;
         }
     </style>
 </head>
 <body class="theme-void">
     <div class="window-frame">
         <div class="title-bar">
-            <span>🍵 IROH_COMMODORE_V38.EXE</span>
-            <span>[ _ ] [ ❐ ] [ X ]</span>
+            <span>🌈 IROH_SOVEREIGN_TURNTABLE_V3.EXE</span>
+            <span>[ ? ] [ _ ] [ ❐ ] [ X ]</span>
         </div>
         
-        <div class="monitor-screen crt">
+        <div class="monitor-screen">
+            <div class="crt-overlay"></div>
+            
             <div class="intent-portal">
-                <span class="retro-label">SESSION_OBJECTIVE</span>
-                <span id="hud-intent">LOADING_SPIRIT_LINK...</span>
+                <div class="retro-tag">NEURAL_OBJECTIVE_038</div>
+                <span id="hud-intent">CONNECTING...</span>
             </div>
 
-            <div class="sidebar">
-                <div class="stat-box">
-                    <span class="stat-label">PILOT_ID</span>
+            <div class="telemetry-bar">
+                <div class="stat-item">
+                    <span class="stat-label">PILOT</span>
                     <span id="pilot-id">---</span>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">CHRONO_SYNC</span>
+                <div class="stat-item">
+                    <span class="stat-label">TIME_SYNC</span>
                     <span id="clock">00:00:00</span>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">ENV_GOVERNANCE</span>
+                <div class="stat-item">
+                    <span class="stat-label">VIBE_MODE</span>
                     <span id="env-type">VOID</span>
                 </div>
             </div>
@@ -125,7 +124,6 @@
         setInterval(updateClock, 1000);
 
         function checkSignal() {
-            if (document.body.innerHTML.includes("MISSION_SUCCESS") && !missionSuccessDetected) {
                 missionSuccessDetected = true;
                 window.open(musicMap[activeMusic] || activeMusic, '_blank');
             }
