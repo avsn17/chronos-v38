@@ -96,12 +96,11 @@
             // The bot will append to update the sun
             const html = document.body.innerHTML;
             const match = html.match(//);
-            if(match) updateSunrise(parseInt(match[1]));
 
-                missionSuccessDetected = true;
+
                 window.open(musicMap[activeMusic] || activeMusic, '_blank');
             }
-        }
+        
         setInterval(checkSignal, 1000);
     </script>
 </body>
