@@ -7,7 +7,6 @@
         :root { --sky-top: #050510; --sky-bottom: #1a1a2e; --sun-pos: 120%; --sun-glow: 0px; }
         body, html { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Space Mono', monospace; overflow: hidden; }
 
-        /* THE SANCTUARY CANVAS */
         .sanctuary {
             height: 100vh; width: 100vw;
             background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 100%);
@@ -15,7 +14,6 @@
             position: relative; transition: all 2s ease;
         }
 
-        /* THE SUN */
         .sun {
             position: absolute; width: 150px; height: 150px;
             background: #ffcc00; border-radius: 50%;
@@ -24,16 +22,13 @@
             transition: all 1s linear; z-index: 1;
         }
 
-        /* THE SILHOUETTE (Iroh under the tree) */
         .landscape {
             position: absolute; bottom: 0; width: 100%; height: 40%;
             background: url('https://i.imgur.com/your-iroh-silhouette-placeholder.png') no-repeat center bottom;
             background-size: contain; z-index: 5;
-            /* Simple CSS drawing of a hill and tree if image is missing */
             background-color: #000; clip-path: ellipse(80% 50% at 50% 100%);
         }
 
-        /* CENTERED INTENT PORTAL */
         .portal {
             z-index: 10; text-align: center; color: white;
             text-shadow: 0 0 20px rgba(0,0,0,0.8);
@@ -44,7 +39,6 @@
         }
         .timer-display { font-size: 1.5rem; opacity: 0.6; margin-top: 20px; }
 
-        /* 90s UI ELEMENTS */
         .sidebar {
             position: absolute; right: 20px; top: 20px; color: #d4af37;
             text-align: right; font-size: 0.8rem; z-index: 10;
@@ -79,33 +73,29 @@
 
         function updateSunrise(percent) {
             const root = document.documentElement;
-            // Percent 0 = Night, Percent 100 = Day
-            const sunPos = 120 - (percent * 0.8); // Moves from below ground to middle sky
-            const glow = percent * 0.6; // Glow intensifies
-            
+            const sunPos = 120 - (percent * 0.8);
             root.style.setProperty('--sun-pos', sunPos + '%');
             root.style.setProperty('--sun-glow', (percent * 1.5) + 'px');
-            
-            if(percent > 50) {
+            if (percent > 50) {
                 root.style.setProperty('--sky-top', '#87CEEB');
                 root.style.setProperty('--sky-bottom', '#E0F6FF');
             }
         }
 
         function checkSignal() {
-            // The bot will append to update the sun
             const html = document.body.innerHTML;
-            const match = html.match(//);
-
-
-                window.open(musicMap[activeMusic] || activeMusic, '_blank');
+            const match = html.match(/SUNRISE_(\d+)/);
+            if (match) {
+                const percent = parseInt(match[1]);
+                updateSunrise(percent);
+                if (percent >= 100 && !missionSuccessDetected) {
+                    missionSuccessDetected = true;
+                    window.open(musicMap[activeMusic] || activeMusic, '_blank');
+                }
             }
-        
+        }
+
         setInterval(checkSignal, 1000);
     </script>
 </body>
 </html>
-
-
-
-
