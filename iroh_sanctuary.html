@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IROH'S SANCTUARY — FOCUS TERMINAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#d4af37;--gold-glow:rgba(212,175,55,0.22);
+  --sky-top:#03030f;--sky-mid:#0a0a1a;--sky-bottom:#12102a;
+  --sun-y:110%;--sun-glow:0px;--sun-color:#ffcc00;--horizon:#1a0a00;
+  --text:#e8dcc8;--text-dim:rgba(232,220,200,0.38);--border:rgba(212,175,55,0.18);
+  --bg-panel:rgba(5,4,16,0.88);--accent:#d4af37;
+  --danger:#f87171;--font-mono:'Share Tech Mono',monospace;
+  --font-display:'Cinzel',serif;--font-serif:'IM Fell English',serif;
+}
+[data-theme="fire"]  {--sky-top:#0f0300;--sky-mid:#1a0800;--sky-bottom:#2a1000;--sun-color:#ff6600;--accent:#ff6600;--border:rgba(255,102,0,0.22);--gold-glow:rgba(255,102,0,0.22);}
+[data-theme="water"] {--sky-top:#000f1a;--sky-mid:#001a2a;--sky-bottom:#00253a;--sun-color:#00ccff;--accent:#00ccff;--border:rgba(0,204,255,0.22);--gold-glow:rgba(0,204,255,0.22);}
+[data-theme="earth"] {--sky-top:#0a0f00;--sky-mid:#101a00;--sky-bottom:#182500;--sun-color:#88cc00;--accent:#88cc00;--border:rgba(136,204,0,0.22);--gold-glow:rgba(136,204,0,0.22);}
+[data-theme="air"]   {--sky-top:#0a0a15;--sky-mid:#10101f;--sky-bottom:#1a1a2e;--sun-color:#ccddff;--accent:#aabbff;--border:rgba(170,187,255,0.22);--gold-glow:rgba(170,187,255,0.22);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-mono);background:#000;color:var(--text);cursor:crosshair;}
+
+/* ATMOSPHERE */
+#sanctuary{position:fixed;inset:0;background:linear-gradient(to bottom,var(--sky-top) 0%,var(--sky-mid) 40%,var(--sky-bottom) 75%,var(--horizon) 100%);transition:background 3s ease;overflow:hidden;}
+#stars{position:absolute;inset:0;pointer-events:none;opacity:1;transition:opacity 4s ease;background-image:radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 25% 8%,rgba(255,255,255,0.6) 0%,transparent 100%),radial-gradient(1px 1px at 40% 20%,rgba(255,255,255,0.9) 0%,transparent 100%),radial-gradient(1px 1px at 55% 5%,rgba(255,255,255,0.7) 0%,transparent 100%),radial-gradient(1px 1px at 70% 12%,rgba(255,255,255,0.5) 0%,transparent 100%),radial-gradient(1px 1px at 85% 18%,rgba(255,255,255,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 15% 35%,rgba(255,255,255,0.4) 0%,transparent 100%),radial-gradient(1px 1px at 60% 30%,rgba(255,255,255,0.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 48% 10%,rgba(255,255,240,1) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 20% 22%,rgba(255,255,240,0.9) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 92% 8%,rgba(255,255,240,0.8) 0%,transparent 100%);}
+#sun{position:absolute;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#fff8e0 0%,var(--sun-color) 40%,transparent 70%);left:50%;bottom:var(--sun-y);transform:translateX(-50%);box-shadow:0 0 var(--sun-glow) var(--sun-color),0 0 calc(var(--sun-glow)*2) rgba(255,204,0,0.15);transition:bottom 1s linear,box-shadow 1s ease,background 3s ease;z-index:2;}
+#horizon-glow{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,var(--gold-glow) 0%,transparent 100%);opacity:0;transition:opacity 3s ease;z-index:1;pointer-events:none;}
+#ground{position:absolute;bottom:0;left:0;right:0;height:22%;background:#000;z-index:4;clip-path:polygon(0% 100%,0% 60%,3% 55%,8% 45%,12% 40%,15% 42%,18% 30%,22% 20%,24% 22%,26% 15%,28% 18%,30% 10%,32% 18%,34% 22%,38% 35%,42% 40%,45% 38%,50% 45%,55% 42%,58% 48%,62% 40%,65% 35%,68% 38%,72% 30%,74% 32%,76% 28%,78% 32%,80% 40%,85% 42%,88% 45%,92% 50%,95% 55%,100% 60%,100% 100%);}
+#tree{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);width:0;height:0;z-index:3;}
+#tree::before{content:'';position:absolute;width:6px;height:80px;background:#000;bottom:0;left:50%;transform:translateX(-50%);}
+#tree::after{content:'';position:absolute;width:90px;height:110px;background:#000;bottom:60px;left:50%;transform:translateX(-50%);clip-path:polygon(50% 0%,0% 100%,100% 100%);}
+#iroh-figure{position:absolute;bottom:calc(18% + 2px);left:calc(50% - 28px);width:20px;height:35px;z-index:5;}
+#iroh-figure::before{content:'';position:absolute;width:13px;height:21px;background:#000;bottom:0;left:50%;transform:translateX(-50%);border-radius:2px 2px 0 0;}
+#iroh-figure::after{content:'';position:absolute;width:10px;height:10px;background:#000;bottom:19px;left:50%;transform:translateX(-50%);border-radius:50%;}
+#warp-overlay{position:fixed;inset:0;z-index:2000;pointer-events:none;opacity:0;background:white;transition:opacity 0.1s;}
+
+/* COMMAND PALETTE */
+#cmd-modal{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;}
+#cmd-modal.open{display:flex;}
+#cmd-box{border:1px solid var(--border);width:min(580px,94vw);background:var(--bg-panel);animation:fadeIn 0.18s ease;}
+#cmd-header{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);}
+#cmd-header span{font-size:0.55rem;letter-spacing:4px;color:var(--gold);opacity:0.65;}
+#cmd-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;font-family:var(--font-mono);padding:2px 8px;}
+#cmd-close:hover{color:var(--danger);}
+#cmd-input-wrap{display:flex;align-items:center;padding:0 18px;border-bottom:1px solid var(--border);}
+#cmd-input-wrap span{color:var(--accent);margin-right:8px;font-size:0.9rem;}
+#cmd-input{flex:1;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:0.78rem;padding:13px 0;outline:none;letter-spacing:1px;}
+#cmd-input::placeholder{color:var(--text-dim);}
+#cmd-results{max-height:300px;overflow-y:auto;}
+#cmd-results::-webkit-scrollbar{width:2px;}
+#cmd-results::-webkit-scrollbar-thumb{background:var(--border);}
+.cmd-group-header{padding:7px 18px 3px;font-size:0.44rem;letter-spacing:3px;color:var(--gold);opacity:0.4;}
+.cmd-item{display:flex;align-items:center;gap:12px;padding:9px 18px;cursor:pointer;transition:background 0.12s;}
+.cmd-item:hover,.cmd-item.sel{background:rgba(212,175,55,0.07);}
+.cmd-item.sel{border-left:2px solid var(--accent);}
+.cmd-key{font-size:0.55rem;letter-spacing:2px;color:var(--accent);background:rgba(212,175,55,0.09);border:1px solid var(--border);padding:2px 7px;border-radius:1px;white-space:nowrap;min-width:62px;text-align:center;}
+.cmd-desc{font-size:0.68rem;color:var(--text);letter-spacing:1px;flex:1;}
+.cmd-hint{font-size:0.5rem;color:var(--text-dim);}
+#cmd-footer{padding:7px 18px;border-top:1px solid var(--border);display:flex;gap:18px;}
+.cmd-legend{font-size:0.48rem;letter-spacing:2px;color:var(--text-dim);display:flex;align-items:center;gap:4px;}
+.cmd-legend kbd{background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:1px 5px;font-family:var(--font-mono);font-size:0.46rem;border-radius:1px;}
+
+/* SETUP */
+#setup-overlay{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.95);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;}
+#setup-box{border:1px solid var(--border);padding:42px;width:min(500px,92vw);background:var(--bg-panel);animation:fadeIn 0.5s ease;}
+#setup-box h2{font-family:var(--font-display);font-size:1rem;font-weight:400;letter-spacing:8px;color:var(--gold);text-align:center;margin-bottom:4px;}
+.subtitle{font-size:0.5rem;letter-spacing:4px;color:var(--text-dim);text-align:center;margin-bottom:28px;}
+.how-it-works{border:1px solid var(--border);padding:12px 14px;margin-bottom:20px;background:rgba(212,175,55,0.02);}
+.how-it-works .hw-title{font-size:0.48rem;letter-spacing:3px;color:var(--gold);opacity:0.55;margin-bottom:8px;}
+.hw-step{display:flex;align-items:baseline;gap:8px;font-size:0.56rem;color:var(--text-dim);line-height:2;}
+.hw-step .n{color:var(--gold);opacity:0.7;min-width:14px;}
+.hw-step kbd{background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:1px 5px;font-size:0.5rem;font-family:var(--font-mono);}
+
+/* MAIN GRID */
+#ui{position:fixed;inset:0;display:grid;grid-template-columns:268px 1fr 268px;grid-template-rows:auto 1fr auto;z-index:10;pointer-events:none;}
+#header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:13px 18px 7px;pointer-events:all;}
+#header-title{font-family:var(--font-display);font-size:0.58rem;font-weight:400;letter-spacing:6px;color:var(--gold);opacity:0.45;}
+#header-controls{display:flex;gap:7px;}
+
+/* PANELS */
+.panel{background:var(--bg-panel);border:1px solid var(--border);backdrop-filter:blur(14px);pointer-events:all;display:flex;flex-direction:column;overflow:hidden;}
+#panel-left{grid-column:1;grid-row:2;margin:0 0 0 13px;border-radius:1px;}
+#panel-right{grid-column:3;grid-row:2;margin:0 13px 0 0;border-radius:1px;}
+.ps{padding:13px 15px;border-bottom:1px solid var(--border);}
+.ps:last-child{border-bottom:none;flex:1;}
+.pl{font-size:0.48rem;letter-spacing:4px;color:var(--gold);opacity:0.5;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.pl::before{content:'';width:9px;height:1px;background:var(--gold);opacity:0.5;}
+
+/* INPUTS */
+input[type="text"],input[type="number"],select{width:100%;background:rgba(0,0,0,0.35);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.7rem;padding:7px 10px;outline:none;letter-spacing:1px;transition:border-color 0.2s,box-shadow 0.2s;border-radius:1px;appearance:none;}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 10px var(--gold-glow);}
+input::placeholder{color:var(--text-dim);}
+select option{background:#0a0a1a;}
+label{display:block;font-size:0.5rem;letter-spacing:3px;color:var(--gold);opacity:0.6;margin-bottom:6px;}
+
+/* CENTER */
+#center{grid-column:2;grid-row:2;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+#intent-display{font-family:var(--font-display);font-size:clamp(0.85rem,2.2vw,1.7rem);font-weight:700;letter-spacing:5px;color:var(--text);text-align:center;text-transform:uppercase;opacity:0.9;text-shadow:0 0 40px var(--gold-glow);margin-bottom:4px;min-height:2rem;transition:color 0.5s;}
+#system-status{font-size:0.52rem;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:38px;}
+#timer-ring{position:relative;width:185px;height:185px;margin-bottom:32px;}
+#timer-svg{position:absolute;inset:0;transform:rotate(-90deg);}
+#timer-bg{fill:none;stroke:rgba(212,175,55,0.07);stroke-width:2;}
+#timer-arc{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-dasharray:565.48;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke 3s ease;filter:drop-shadow(0 0 5px var(--accent));}
+#timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+#timer-text{font-family:var(--font-display);font-size:2.5rem;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1;}
+#timer-label{font-size:0.46rem;letter-spacing:4px;color:var(--gold);opacity:0.4;}
+#warp-controls{display:flex;gap:9px;pointer-events:all;flex-wrap:wrap;justify-content:center;}
+
+/* BUTTONS */
+.btn{font-family:var(--font-mono);font-size:0.63rem;letter-spacing:3px;text-transform:uppercase;padding:9px 20px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:all 0.16s;pointer-events:all;border-radius:1px;white-space:nowrap;}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(212,175,55,0.04);}
+.btn-primary{border-color:var(--gold);color:var(--gold);box-shadow:0 0 14px var(--gold-glow);}
+.btn-primary:hover{background:rgba(212,175,55,0.09);box-shadow:0 0 24px var(--gold-glow);}
+.btn-primary.engaged{border-color:var(--danger);color:var(--danger);box-shadow:0 0 14px rgba(248,113,113,0.28);animation:pulse-danger 2s ease-in-out infinite;}
+.btn-sm{font-size:0.56rem;padding:6px 13px;letter-spacing:2px;}
+.btn-gold{border-color:rgba(212,175,55,0.4);color:var(--gold);}
+
+.element-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.el-btn{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:2px;padding:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.16s;text-align:center;text-transform:uppercase;}
+.el-btn:hover{border-color:var(--accent);color:var(--accent);}
+.el-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(212,175,55,0.07);box-shadow:0 0 9px var(--gold-glow);}
+
+.stream-list{display:flex;flex-direction:column;gap:3px;}
+.st-btn{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:2px;padding:7px 10px;border:1px solid transparent;background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.16s;text-align:left;text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.st-btn::before{content:'▸';opacity:0.28;font-size:0.58rem;}
+.st-btn:hover{color:var(--text);border-color:var(--border);}
+.st-btn.active{color:var(--accent);border-color:var(--border);background:rgba(212,175,55,0.05);}
+.st-btn.active::before{opacity:1;content:'▶';}
+
+#log-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;padding:2px 0;}
+#log-feed::-webkit-scrollbar{width:2px;}
+#log-feed::-webkit-scrollbar-thumb{background:var(--border);}
+.log-entry{font-size:0.5rem;line-height:1.65;color:var(--text-dim);letter-spacing:0.5px;padding:2px 0 2px 8px;border-left:1px solid transparent;transition:all 0.3s;}
+.log-entry.new{color:var(--text);border-left-color:var(--accent);}
+.log-entry .ts{opacity:0.32;margin-right:5px;}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;}
+.stat-lbl{font-size:0.5rem;color:var(--text-dim);letter-spacing:2px;}
+.stat-val{font-family:var(--font-display);font-size:1.05rem;color:var(--gold);font-weight:700;}
+.flt-entry{font-size:0.5rem;color:var(--text-dim);padding:3px 0;border-bottom:1px solid rgba(212,175,55,0.05);display:flex;justify-content:space-between;gap:6px;}
+.flt-entry .fn{color:var(--gold);opacity:0.65;}
+#iroh-box{font-family:var(--font-serif);font-style:italic;font-size:0.66rem;line-height:1.8;color:var(--text-dim);min-height:52px;border-left:1px solid var(--border);padding-left:10px;margin-bottom:9px;transition:opacity 0.4s;}
+
+/* SHORTCUTS PANEL */
+#shortcuts-panel{position:fixed;right:14px;bottom:50px;z-index:200;background:var(--bg-panel);border:1px solid var(--border);padding:15px;width:230px;pointer-events:all;display:none;animation:fadeIn 0.2s ease;}
+#shortcuts-panel.open{display:block;}
+#shortcuts-panel h3{font-size:0.5rem;letter-spacing:4px;color:var(--gold);opacity:0.55;margin-bottom:11px;}
+.sk-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(212,175,55,0.05);}
+.sk-row:last-child{border-bottom:none;}
+.sk-key{background:rgba(212,175,55,0.08);border:1px solid var(--border);font-size:0.48rem;padding:2px 6px;letter-spacing:1px;font-family:var(--font-mono);color:var(--accent);}
+.sk-desc{font-size:0.5rem;color:var(--text-dim);letter-spacing:1px;}
+
+/* BOTTOM BAR */
+#bottom-bar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:7px 18px 13px;pointer-events:all;flex-wrap:wrap;gap:8px;}
+.inst-grp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.inst-item{display:flex;align-items:center;gap:4px;font-size:0.48rem;letter-spacing:1.5px;color:var(--text-dim);}
+.inst-item kbd{background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:1px 5px;font-family:var(--font-mono);font-size:0.46rem;border-radius:1px;}
+#pilot-tag{font-family:var(--font-display);font-size:0.56rem;letter-spacing:4px;color:var(--gold);opacity:0.55;}
+
+/* SUCCESS */
+#success-screen{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,0.96);backdrop-filter:blur(24px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;}
+#success-screen.visible{display:flex;}
+#success-title{font-family:var(--font-display);font-size:clamp(1.6rem,4.5vw,3.2rem);font-weight:900;color:var(--gold);letter-spacing:4px;animation:fadeIn 0.8s ease;}
+#success-meta{font-size:0.62rem;letter-spacing:4px;color:var(--text-dim);line-height:2.5;animation:fadeIn 1s ease;}
+#success-quote{font-family:var(--font-serif);font-style:italic;font-size:0.88rem;color:var(--text);max-width:380px;line-height:1.9;opacity:0.62;animation:fadeIn 1.2s ease;}
+#success-actions{display:flex;gap:10px;margin-top:14px;pointer-events:all;animation:fadeIn 1.4s ease;flex-wrap:wrap;justify-content:center;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-danger{0%,100%{box-shadow:0 0 14px rgba(248,113,113,0.28)}50%{box-shadow:0 0 28px rgba(248,113,113,0.48)}}
+</style>
+</head>
+<body>
+
+<div id="sanctuary"><div id="stars"></div><div id="sun"></div><div id="horizon-glow"></div><div id="ground"></div><div id="tree"></div><div id="iroh-figure"></div></div>
+<div id="warp-overlay"></div>
+
+<!-- COMMAND PALETTE -->
+<div id="cmd-modal" role="dialog" aria-modal="true">
+  <div id="cmd-box">
+    <div id="cmd-header">
+      <span>COMMAND PALETTE</span>
+      <button id="cmd-close" onclick="closeCmd()">✕</button>
+    </div>
+    <div id="cmd-input-wrap">
+      <span>›</span>
+      <input id="cmd-input" type="text" placeholder="TYPE A COMMAND..." autocomplete="off"
+             oninput="filterCmd(this.value)" onkeydown="cmdNav(event)">
+    </div>
+    <div id="cmd-results"></div>
+    <div id="cmd-footer">
+      <span class="cmd-legend"><kbd>↑↓</kbd> Navigate</span>
+      <span class="cmd-legend"><kbd>↵</kbd> Execute</span>
+      <span class="cmd-legend"><kbd>Esc</kbd> Close</span>
+      <span class="cmd-legend"><kbd>⌘K</kbd> Toggle</span>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP OVERLAY -->
+<div id="setup-overlay">
+  <div id="setup-box">
+    <h2>IROH'S SANCTUARY</h2>
+    <p class="subtitle">FOCUS TERMINAL · DEEP WORK ENGINE</p>
+    <div style="margin-bottom:14px;"><label>PILOT CALLSIGN</label><input type="text" id="setup-pilot" placeholder="ENTER CALLSIGN..." maxlength="20"></div>
+    <div style="margin-bottom:14px;"><label>MISSION INTENT</label><input type="text" id="setup-intent" placeholder="WHAT ARE YOU BUILDING?" maxlength="40"></div>
+    <div style="margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><label>DURATION (MIN)</label><input type="number" id="setup-dur" value="25" min="1" max="180"></div>
+      <div><label>ELEMENT</label><select id="setup-theme" onchange="setTheme(this.value)"><option value="void">VOID</option><option value="fire">FIRE</option><option value="water">WATER</option><option value="earth">EARTH</option><option value="air">AIR</option></select></div>
+    </div>
+    <div class="how-it-works">
+      <div class="hw-title">HOW IT WORKS</div>
+      <div class="hw-step"><span class="n">1</span>Set callsign, intent &amp; duration above</div>
+      <div class="hw-step"><span class="n">2</span>Pick an element for the sky atmosphere</div>
+      <div class="hw-step"><span class="n">3</span>Select a neural stream — plays when done</div>
+      <div class="hw-step"><span class="n">4</span>Press <strong style="color:var(--gold)">ENGAGE WARP</strong> or <kbd>SPACE</kbd> to begin</div>
+      <div class="hw-step"><span class="n">5</span>The sun rises as you focus — reach dawn</div>
+      <div class="hw-step"><span class="n">6</span>Use <kbd>⌘K</kbd> anytime for all commands</div>
+    </div>
+    <button class="btn btn-primary" onclick="initMission()" style="width:100%;letter-spacing:5px;padding:12px;">ENGAGE WARP</button>
+    <div style="text-align:center;margin-top:9px;font-size:0.46rem;letter-spacing:2px;color:var(--text-dim);">Press <kbd style="background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:1px 4px;">⌘K</kbd> anytime for commands · <kbd style="background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:1px 4px;">?</kbd> for shortcuts</div>
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div id="success-screen">
+  <div id="success-title">SUN HAS RISEN</div>
+  <div id="success-meta"></div>
+  <div id="success-quote"></div>
+  <div id="success-actions">
+    <button class="btn btn-primary btn-sm" onclick="newMission()">NEW MISSION [N]</button>
+    <button class="btn btn-sm" onclick="consultIroh();hideSuccess()">CONSULT IROH [I]</button>
+    <button class="btn btn-sm" onclick="hideSuccess()">RETURN [ESC]</button>
+  </div>
+</div>
+
+<!-- SHORTCUTS PANEL -->
+<div id="shortcuts-panel">
+  <h3>KEYBOARD SHORTCUTS</h3>
+  <div class="sk-row"><span class="sk-key">SPACE</span><span class="sk-desc">Toggle warp</span></div>
+  <div class="sk-row"><span class="sk-key">⌘K</span><span class="sk-desc">Command palette</span></div>
+  <div class="sk-row"><span class="sk-key">R</span><span class="sk-desc">Reset timer</span></div>
+  <div class="sk-row"><span class="sk-key">I</span><span class="sk-desc">Consult Iroh</span></div>
+  <div class="sk-row"><span class="sk-key">N</span><span class="sk-desc">New mission</span></div>
+  <div class="sk-row"><span class="sk-key">?</span><span class="sk-desc">Toggle this panel</span></div>
+  <div class="sk-row"><span class="sk-key">1–5</span><span class="sk-desc">Select stream</span></div>
+  <div class="sk-row"><span class="sk-key">F/W/E/A/V</span><span class="sk-desc">Element themes</span></div>
+  <div class="sk-row"><span class="sk-key">ESC</span><span class="sk-desc">Close overlays</span></div>
+</div>
+
+<!-- MAIN UI -->
+<div id="ui">
+  <div id="header">
+    <div id="header-title">IROH'S SANCTUARY · FOCUS TERMINAL</div>
+    <div id="header-controls">
+      <button class="btn btn-sm btn-gold" onclick="openCmd()" title="⌘K">⌘ COMMANDS</button>
+      <button class="btn btn-sm" onclick="toggleShortcuts()" title="?">? KEYS</button>
+      <button class="btn btn-sm" onclick="newMission()" title="N">↺ NEW</button>
+    </div>
+  </div>
+
+  <!-- LEFT PANEL -->
+  <div class="panel" id="panel-left">
+    <div class="ps">
+      <div class="pl">MISSION PARAMS</div>
+      <div style="margin-bottom:9px;"><label>INTENT</label><input type="text" id="live-intent" placeholder="WHAT ARE YOU BUILDING?" maxlength="40" oninput="updateIntent(this.value)"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:7px;align-items:end;">
+        <div><label>MINUTES</label><input type="number" id="live-dur" value="25" min="1" max="180"></div>
+        <button class="btn btn-sm" onclick="applyParams()" title="Apply duration change">SET</button>
+      </div>
+    </div>
+
+    <div class="ps">
+      <div class="pl">ELEMENT · ATMOSPHERE</div>
+      <div class="element-grid">
+        <button class="el-btn active" onclick="setTheme('void',this)" title="V">VOID</button>
+        <button class="el-btn" onclick="setTheme('fire',this)" title="F">FIRE</button>
+        <button class="el-btn" onclick="setTheme('water',this)" title="W">WATER</button>
+        <button class="el-btn" onclick="setTheme('earth',this)" title="E">EARTH</button>
+        <button class="el-btn" onclick="setTheme('air',this)" title="A" style="grid-column:1/-1;">AIR</button>
+      </div>
+    </div>
+
+    <div class="ps" style="flex:1;">
+      <div class="pl">NEURAL STREAM · AUTO-PLAYS ON COMPLETE</div>
+      <div class="stream-list">
+        <button class="st-btn active" onclick="selectStream(0,this)" title="[1]">CAS FM</button>
+        <button class="st-btn" onclick="selectStream(1,this)" title="[2]">LANA DEL REY</button>
+        <button class="st-btn" onclick="selectStream(2,this)" title="[3]">BEE GEES</button>
+        <button class="st-btn" onclick="selectStream(3,this)" title="[4]">NIGHTRIDE FM</button>
+        <button class="st-btn" onclick="selectStream(4,this)" title="[5]">LOFI HIP-HOP</button>
+      </div>
+    </div>
+
+    <div class="ps">
+      <div class="pl">IROH'S WISDOM · PRESS I</div>
+      <div id="iroh-box">Silence is the first teacher.</div>
+      <button class="btn btn-sm" id="iroh-btn" onclick="consultIroh()" style="width:100%;">CONSULT IROH [I]</button>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="intent-display">AWAITING_SPIRIT</div>
+    <div id="system-status">STANDBY · PILOT: <span id="pilot-inline">---</span></div>
+    <div id="timer-ring">
+      <svg id="timer-svg" viewBox="0 0 200 200" width="185" height="185">
+        <circle id="timer-bg"  cx="100" cy="100" r="90"/>
+        <circle id="timer-arc" cx="100" cy="100" r="90"/>
+      </svg>
+      <div id="timer-center">
+        <div id="timer-text">25:00</div>
+        <div id="timer-label">TIME REMAINING</div>
+      </div>
+    </div>
+    <div id="warp-controls">
+      <button class="btn btn-primary" id="warp-btn" onclick="toggleWarp()" title="SPACE">ENGAGE WARP</button>
+      <button class="btn btn-sm" onclick="resetTimer()" title="R">RESET [R]</button>
+      <button class="btn btn-sm btn-gold" onclick="openCmd()" title="⌘K">⌘</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel" id="panel-right">
+    <div class="ps">
+      <div class="pl">MISSION STATS</div>
+      <div class="stat-row"><span class="stat-lbl">SESSIONS</span><span class="stat-val" id="stat-sessions">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">TOTAL MIN</span><span class="stat-val" id="stat-minutes">0</span></div>
+      <div style="display:flex;gap:5px;margin-top:9px;">
+        <button class="btn btn-sm" onclick="exportLog()" style="flex:1;" title="Download mission_log.json">EXPORT</button>
+        <button class="btn btn-sm" onclick="clearStats()" style="flex:1;" title="Reset all stats">CLEAR</button>
+      </div>
+    </div>
+
+    <div class="ps">
+      <div class="pl">FLIGHT HISTORY</div>
+      <div id="flight-history"></div>
+    </div>
+
+    <div class="ps" style="flex:1;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="pl" style="margin-bottom:0;">SYSTEM LOG</div>
+        <button class="btn btn-sm" onclick="clearLog()" style="font-size:0.42rem;padding:2px 7px;opacity:0.45;">CLR</button>
+      </div>
+      <div id="log-feed"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottom-bar">
+    <div class="inst-grp">
+      <div class="inst-item"><kbd>SPC</kbd>WARP</div>
+      <div class="inst-item"><kbd>R</kbd>RESET</div>
+      <div class="inst-item"><kbd>I</kbd>IROH</div>
+      <div class="inst-item"><kbd>N</kbd>NEW</div>
+      <div class="inst-item"><kbd>⌘K</kbd>CMDS</div>
+      <div class="inst-item"><kbd>?</kbd>KEYS</div>
+      <div class="inst-item"><kbd>1-5</kbd>STREAM</div>
+    </div>
+    <div id="pilot-tag">PILOT: ---</div>
+    <div class="inst-grp">
+      <div class="inst-item" id="sunrise-pct">SUNRISE: 0%</div>
+      <div class="inst-item" id="stream-status">CAS FM</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// COMMANDS
+const COMMANDS=[
+  {key:'engage',   label:'ENGAGE WARP',         hint:'Start focus session',       action:()=>startWarp(),          group:'WARP'},
+  {key:'abort',    label:'ABORT WARP',           hint:'Pause current session',     action:()=>stopWarp(),           group:'WARP'},
+  {key:'reset',    label:'RESET TIMER',          hint:'Reset to full duration',    action:()=>resetTimer(),         group:'WARP'},
+  {key:'25min',    label:'DURATION: 25 MIN',     hint:'Classic Pomodoro',          action:()=>setDuration(25),      group:'WARP'},
+  {key:'50min',    label:'DURATION: 50 MIN',     hint:'Deep work block',           action:()=>setDuration(50),      group:'WARP'},
+  {key:'90min',    label:'DURATION: 90 MIN',     hint:'Ultradian rhythm',          action:()=>setDuration(90),      group:'WARP'},
+  {key:'new',      label:'NEW MISSION',          hint:'Open setup screen',         action:()=>newMission(),         group:'MISSION'},
+  {key:'iroh',     label:'CONSULT IROH',         hint:'Receive wisdom [I]',        action:()=>consultIroh(),        group:'WISDOM'},
+  {key:'void',     label:'ELEMENT: VOID',        hint:'Dark cosmic theme [V]',     action:()=>setThemeCmd('void'),  group:'ELEMENT'},
+  {key:'fire',     label:'ELEMENT: FIRE',        hint:'Ember atmosphere [F]',      action:()=>setThemeCmd('fire'),  group:'ELEMENT'},
+  {key:'water',    label:'ELEMENT: WATER',       hint:'Ocean depths theme [W]',    action:()=>setThemeCmd('water'), group:'ELEMENT'},
+  {key:'earth',    label:'ELEMENT: EARTH',       hint:'Forest canopy theme [E]',   action:()=>setThemeCmd('earth'), group:'ELEMENT'},
+  {key:'air',      label:'ELEMENT: AIR',         hint:'Sky & cloud theme [A]',     action:()=>setThemeCmd('air'),   group:'ELEMENT'},
+  {key:'cas',      label:'STREAM: CAS FM',       hint:'Select stream [1]',         action:()=>selectStreamCmd(0,'CAS FM'),     group:'STREAM'},
+  {key:'lana',     label:'STREAM: LANA DEL REY', hint:'Select stream [2]',         action:()=>selectStreamCmd(1,'LANA DEL REY'),group:'STREAM'},
+  {key:'beegees',  label:'STREAM: BEE GEES',     hint:'Select stream [3]',         action:()=>selectStreamCmd(2,'BEE GEES'),   group:'STREAM'},
+  {key:'nightride',label:'STREAM: NIGHTRIDE FM', hint:'Select stream [4]',         action:()=>selectStreamCmd(3,'NIGHTRIDE FM'),group:'STREAM'},
+  {key:'lofi',     label:'STREAM: LOFI HIP-HOP', hint:'Select stream [5]',         action:()=>selectStreamCmd(4,'LOFI HIP-HOP'),group:'STREAM'},
+  {key:'export',   label:'EXPORT FLIGHT LOG',    hint:'Download mission_log.json', action:()=>exportLog(),          group:'DATA'},
+  {key:'clear',    label:'CLEAR ALL STATS',      hint:'Reset sessions & history',  action:()=>clearStats(),         group:'DATA'},
+  {key:'shortcuts',label:'TOGGLE SHORTCUTS',     hint:'Show keyboard shortcuts [?]',action:()=>toggleShortcuts(),  group:'HELP'},
+];
+
+let cmdSel=0, filteredCmds=[...COMMANDS];
+
+// STATE
+const store={
+  get:(k,fb)=>{try{return JSON.parse(localStorage.getItem(k))??fb;}catch{return fb;}},
+  set:(k,v) =>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){console.warn(e);}}
+};
+let pilotName=store.get('sv_pilot',''), sessionCount=store.get('sv_sessions',0),
+    minuteCount=store.get('sv_minutes',0), flightHistory=store.get('sv_flights',[]),
+    isRunning=false, timerInterval=null, totalSeconds=25*60, secondsLeft=25*60,
+    currentStream=0, currentStreamName='CAS FM';
+const CIRC=2*Math.PI*90;
+const STREAMS=['https://www.youtube.com/watch?v=L4vP7T9KoMo','https://www.youtube.com/watch?v=TdrL3QxjyVw','https://www.youtube.com/watch?v=I_izvAbhExY','https://www.youtube.com/watch?v=4xDzrJKXOOY','https://www.youtube.com/watch?v=5qap5aO4i9A'];
+const QUOTES=['While it is always best to believe in oneself, a little help from others can be a great blessing.','Destiny is a funny thing. You never know how things are going to work out.','It is important to draw wisdom from many different places.','Follow your passion and life will reward you.','Sometimes the best way to solve your own problems is to help someone else.','Silence is the first teacher. Pay attention.','The greatest illusion of this world is the illusion of separation.','You must never give in to despair. Let your inner fire burn bright.','Pride is not the opposite of shame, but its source.','There is nothing wrong with letting the people who love you help you.'];
+
+window.onload=()=>{
+  updateStats(); renderFlights();
+  addLog('SYSTEMS_ONLINE'); addLog('AWAITING_PILOT_INPUT');
+  document.getElementById('timer-arc').style.strokeDasharray=CIRC;
+  document.getElementById('timer-arc').style.strokeDashoffset=0;
+  document.getElementById('iroh-box').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  if(pilotName){document.getElementById('setup-pilot').value=pilotName;updatePilotDisplay(pilotName);}
+  renderCmds(COMMANDS);
+};
+
+// COMMAND PALETTE
+function openCmd(){document.getElementById('cmd-modal').classList.add('open');document.getElementById('cmd-input').value='';filteredCmds=[...COMMANDS];cmdSel=0;renderCmds(filteredCmds);setTimeout(()=>document.getElementById('cmd-input').focus(),40);}
+function closeCmd(){document.getElementById('cmd-modal').classList.remove('open');}
+function filterCmd(q){const s=q.toLowerCase().trim();filteredCmds=!s?[...COMMANDS]:COMMANDS.filter(c=>c.label.toLowerCase().includes(s)||c.key.includes(s)||c.hint.toLowerCase().includes(s)||c.group.toLowerCase().includes(s));cmdSel=0;renderCmds(filteredCmds);}
+function renderCmds(cmds){
+  const el=document.getElementById('cmd-results');
+  if(!cmds.length){el.innerHTML='<div style="padding:18px;text-align:center;font-size:0.58rem;color:var(--text-dim);">NO COMMANDS FOUND</div>';return;}
+  let lastG='',html='';
+  cmds.forEach((c,i)=>{
+    if(c.group!==lastG){html+=`<div class="cmd-group-header">${c.group}</div>`;lastG=c.group;}
+    html+=`<div class="cmd-item${i===cmdSel?' sel':''}" onclick="execCmd(${i})" onmouseover="cmdSel=${i};renderCmds(filteredCmds)"><span class="cmd-key">${c.key.toUpperCase()}</span><span class="cmd-desc">${c.label}</span><span class="cmd-hint">${c.hint}</span></div>`;
+  });
+  el.innerHTML=html;
+}
+function cmdNav(e){if(e.key==='ArrowDown'){cmdSel=Math.min(cmdSel+1,filteredCmds.length-1);renderCmds(filteredCmds);e.preventDefault();}if(e.key==='ArrowUp'){cmdSel=Math.max(cmdSel-1,0);renderCmds(filteredCmds);e.preventDefault();}if(e.key==='Enter')execCmd(cmdSel);if(e.key==='Escape')closeCmd();}
+function execCmd(i){const c=filteredCmds[i];if(!c)return;closeCmd();addLog('CMD: '+c.label);c.action();}
+
+// SETUP
+function initMission(){
+  const pilot=document.getElementById('setup-pilot').value.trim().toUpperCase()||'PILOT';
+  const intent=document.getElementById('setup-intent').value.trim().toUpperCase()||'FOCUS';
+  const dur=parseInt(document.getElementById('setup-dur').value)||25;
+  pilotName=pilot; store.set('sv_pilot',pilotName);
+  totalSeconds=dur*60; secondsLeft=totalSeconds;
+  updateIntent(intent); updatePilotDisplay(pilot);
+  document.getElementById('live-intent').value=intent;
+  document.getElementById('live-dur').value=dur;
+  document.getElementById('timer-text').textContent=formatTime(secondsLeft);
+  updateArc(1);
+  document.getElementById('setup-overlay').style.display='none';
+  addLog('PILOT_'+pilot+'_ONLINE');
+  addLog('MISSION: '+intent);
+  addLog('DURATION: '+dur+'MIN');
+  addLog('PRESS SPACE TO ENGAGE WARP');
+  addLog('CMD+K FOR ALL COMMANDS');
+}
+
+function applyParams(){
+  if(isRunning){addLog('CANNOT_CHANGE_PARAMS_DURING_WARP');return;}
+  const intent=document.getElementById('live-intent').value.trim().toUpperCase()||'FOCUS';
+  const dur=parseInt(document.getElementById('live-dur').value)||25;
+  totalSeconds=dur*60; secondsLeft=totalSeconds;
+  updateIntent(intent); updateTimerDisplay(); updateArc(1);
+  addLog('PARAMS_UPDATED: '+intent+' · '+dur+'MIN');
+}
+
+// TIMER
+function toggleWarp(){isRunning?stopWarp():startWarp();}
+function startWarp(){
+  if(isRunning)return;
+  isRunning=true;
+  const btn=document.getElementById('warp-btn');
+  btn.textContent='ABORT WARP [SPC]'; btn.classList.add('engaged');
+  document.getElementById('system-status').textContent='IN_WARP · PILOT: '+pilotName;
+  addLog('WARP_SEQUENCE_INITIATED'); addLog('SPACE TO ABORT · R TO RESET');
+  timerInterval=setInterval(()=>{
+    if(--secondsLeft<=0){secondsLeft=0;updateTimerDisplay();updateArc(0);warpComplete();}
+    else{updateTimerDisplay();const p=(totalSeconds-secondsLeft)/totalSeconds;updateArc(1-p);updateSunrise(p*100);document.getElementById('sunrise-pct').textContent='SUNRISE: '+Math.round(p*100)+'%';}
+  },1000);
+}
+function stopWarp(){clearInterval(timerInterval);timerInterval=null;isRunning=false;const btn=document.getElementById('warp-btn');btn.textContent='ENGAGE WARP';btn.classList.remove('engaged');document.getElementById('system-status').textContent='PAUSED · PILOT: '+pilotName;addLog('WARP_PAUSED — SPACE TO RESUME');}
+function resetTimer(){stopWarp();secondsLeft=totalSeconds;updateTimerDisplay();updateArc(1);updateSunrise(0);document.getElementById('sunrise-pct').textContent='SUNRISE: 0%';addLog('TIMER_RESET');}
+function updateTimerDisplay(){document.getElementById('timer-text').textContent=formatTime(secondsLeft);}
+function updateArc(f){document.getElementById('timer-arc').style.strokeDashoffset=CIRC*(1-f);}
+
+// SUNRISE
+function updateSunrise(pct){
+  const r=document.documentElement;
+  r.style.setProperty('--sun-y',(110-pct*0.75)+'%');
+  r.style.setProperty('--sun-glow',(pct*2)+'px');
+  document.getElementById('horizon-glow').style.opacity=(pct/100)*0.8;
+  document.getElementById('stars').style.opacity=1-(pct/100)*0.9;
+}
+
+// WARP COMPLETE
+async function warpComplete(){
+  clearInterval(timerInterval);timerInterval=null;isRunning=false;
+  sessionCount++;minuteCount+=Math.round(totalSeconds/60);
+  store.set('sv_sessions',sessionCount);store.set('sv_minutes',minuteCount);
+  flightHistory.unshift({num:sessionCount,time:new Date().toLocaleTimeString(),dur:Math.round(totalSeconds/60),pilot:pilotName});
+  store.set('sv_flights',flightHistory.slice(0,10));
+  updateStats();renderFlights();
+  const ov=document.getElementById('warp-overlay');ov.style.opacity='1';await delay(120);ov.style.opacity='0';await delay(300);
+  addLog('MISSION_SUCCESS — SESSION #'+sessionCount);addLog('+'+Math.round(totalSeconds/60)+'MIN · TOTAL: '+minuteCount+'MIN');addLog('OPENING STREAM: '+currentStreamName);
+  showSuccess();
+  setTimeout(()=>window.open(STREAMS[currentStream],'_blank'),900);
+  document.getElementById('warp-btn').textContent='ENGAGE WARP';document.getElementById('warp-btn').classList.remove('engaged');
+  document.getElementById('system-status').textContent='STANDBY · PILOT: '+pilotName;
+}
+function showSuccess(){
+  document.getElementById('success-screen').classList.add('visible');
+  document.getElementById('success-meta').innerHTML='PILOT: '+pilotName+' &nbsp;·&nbsp; SESSION #'+sessionCount+' &nbsp;·&nbsp; '+Math.round(totalSeconds/60)+' MIN';
+  document.getElementById('success-quote').textContent='"'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'"';
+}
+function hideSuccess(){document.getElementById('success-screen').classList.remove('visible');}
+function newMission(){hideSuccess();document.getElementById('setup-overlay').style.display='flex';}
+
+// THEME
+function setTheme(t,btn){document.documentElement.setAttribute('data-theme',t);if(btn){document.querySelectorAll('.el-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}addLog('ELEMENT: '+t.toUpperCase());}
+function setThemeCmd(t){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.el-btn').forEach(b=>{if(b.textContent.trim().toLowerCase()===t)b.classList.add('active');else b.classList.remove('active');});addLog('ELEMENT: '+t.toUpperCase());}
+
+// STREAM
+function selectStream(i,btn){currentStream=i;const names=['CAS FM','LANA DEL REY','BEE GEES','NIGHTRIDE FM','LOFI HIP-HOP'];currentStreamName=names[i];document.querySelectorAll('.st-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');document.getElementById('stream-status').textContent=currentStreamName;addLog('STREAM_QUEUED: '+currentStreamName);}
+function selectStreamCmd(i,n){currentStream=i;currentStreamName=n;document.querySelectorAll('.st-btn').forEach((b,j)=>j===i?b.classList.add('active'):b.classList.remove('active'));document.getElementById('stream-status').textContent=n;addLog('STREAM_QUEUED: '+n);}
+
+function setDuration(m){if(isRunning){addLog('CANNOT_CHANGE_DURING_WARP');return;}document.getElementById('live-dur').value=m;totalSeconds=m*60;secondsLeft=totalSeconds;updateTimerDisplay();updateArc(1);addLog('DURATION_SET: '+m+'MIN');}
+function updateIntent(v){document.getElementById('intent-display').textContent=(v.trim().toUpperCase()||'AWAITING_SPIRIT');}
+function updatePilotDisplay(n){document.getElementById('pilot-tag').textContent='PILOT: '+n;document.getElementById('pilot-inline').textContent=n;document.getElementById('system-status').textContent='STANDBY · PILOT: '+n;}
+
+// IROH
+async function consultIroh(){
+  const box=document.getElementById('iroh-box'),btn=document.getElementById('iroh-btn');
+  btn.disabled=true;btn.textContent='CHANNELING...';box.style.opacity='0';await delay(500);
+  box.textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  box.style.opacity='1';btn.textContent='CONSULT IROH [I]';btn.disabled=false;addLog('WISDOM_RETRIEVED');
+}
+
+// STATS & LOG
+function updateStats(){document.getElementById('stat-sessions').textContent=sessionCount;document.getElementById('stat-minutes').textContent=minuteCount;}
+function renderFlights(){document.getElementById('flight-history').innerHTML=flightHistory.slice(0,5).map(f=>`<div class="flt-entry"><span class="fn">#${f.num}</span><span>${f.dur}MIN</span><span style="opacity:0.4">${f.time}</span></div>`).join('')||'<div style="font-size:0.5rem;color:var(--text-dim);padding:3px 0;">NO FLIGHTS YET</div>';}
+function addLog(msg){const feed=document.getElementById('log-feed'),el=document.createElement('div');el.className='log-entry new';const ts=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',second:'2-digit'});el.innerHTML=`<span class="ts">${ts}</span>${msg}`;feed.prepend(el);setTimeout(()=>el.classList.remove('new'),2000);if(feed.children.length>50)feed.lastElementChild.remove();}
+function clearLog(){document.getElementById('log-feed').innerHTML='';addLog('LOG_CLEARED');}
+function clearStats(){if(!confirm('Clear all mission stats?'))return;sessionCount=0;minuteCount=0;flightHistory=[];store.set('sv_sessions',0);store.set('sv_minutes',0);store.set('sv_flights',[]);updateStats();renderFlights();addLog('STATS_CLEARED');}
+function exportLog(){const d=JSON.stringify({pilot:pilotName,sessions:sessionCount,minutes:minuteCount,flights:flightHistory},null,2),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='mission_log.json';a.click();addLog('FLIGHT_LOG_EXPORTED');}
+function toggleShortcuts(){document.getElementById('shortcuts-panel').classList.toggle('open');}
+
+// KEYBOARD
+document.addEventListener('keydown',e=>{
+  const setup=document.getElementById('setup-overlay').style.display!=='none';
+  const cmdOpen=document.getElementById('cmd-modal').classList.contains('open');
+  const typing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName);
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();cmdOpen?closeCmd():openCmd();return;}
+  if(e.key==='Escape'){closeCmd();hideSuccess();return;}
+  if(setup||cmdOpen||typing)return;
+  const k=e.key;
+  if(k===' '){e.preventDefault();toggleWarp();}
+  else if(k==='r'||k==='R')resetTimer();
+  else if(k==='i'||k==='I')consultIroh();
+  else if(k==='n'||k==='N')newMission();
+  else if(k==='?')toggleShortcuts();
+  else if(k==='1')selectStreamCmd(0,'CAS FM');
+  else if(k==='2')selectStreamCmd(1,'LANA DEL REY');
+  else if(k==='3')selectStreamCmd(2,'BEE GEES');
+  else if(k==='4')selectStreamCmd(3,'NIGHTRIDE FM');
+  else if(k==='5')selectStreamCmd(4,'LOFI HIP-HOP');
+  else if(k==='f'||k==='F')setThemeCmd('fire');
+  else if(k==='w'||k==='W')setThemeCmd('water');
+  else if(k==='e'||k==='E')setThemeCmd('earth');
+  else if(k==='a'||k==='A')setThemeCmd('air');
+  else if(k==='v'||k==='V')setThemeCmd('void');
+});
+
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+function formatTime(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+</script>
+</body>
+</html>
