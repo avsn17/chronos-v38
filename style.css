@@ -875,3 +875,75 @@ body.warp-active #stars {
 body.warp-active #stars::before {
   animation-duration: 8s;
 }
+
+/* ── PERFORMANCE FIX ─────────────────────────────────── */
+
+/* Kill expensive flicker — replace with subtle static */
+body::after {
+  animation: none !important;
+  opacity: 0.06 !important;
+}
+
+/* GPU promote all animated elements */
+#stars, #sun, #timer-arc, #timer-ring,
+#timer-ring::before, #timer-ring::after,
+.panel, .btn, #intentDisplay {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Reduce scanline complexity */
+body::before {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.08) 0px,
+    rgba(0,0,0,0.08) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+/* Simplify panel scanlines */
+.panel::before {
+  display: none;
+}
+
+/* Slow down star drift — was causing repaints */
+#stars {
+  animation-duration: 120s;
+  will-change: background-position;
+}
+#stars::before {
+  animation-duration: 80s;
+}
+
+/* Reduce shooting star frequency */
+#stars::after {
+  animation: shooting-star 16s ease-in-out infinite, shooting-star2 22s ease-in-out 8s infinite;
+}
+
+/* Disable modal box scanlines */
+.modal-box::before {
+  display: none;
+}
+
+/* Reduce glow complexity on buttons */
+.btn {
+  box-shadow: 0 0 4px var(--gold-glow);
+  text-shadow: none;
+}
+.btn:hover {
+  box-shadow: 0 0 10px var(--gold-glow);
+  text-shadow: 0 0 6px var(--accent);
+}
+
+/* Phosphor pulse — simpler */
+@keyframes phosphor-pulse {
+  0%,100% { text-shadow: 0 0 6px var(--accent); }
+  50%      { text-shadow: 0 0 14px var(--accent); }
+}
+
+/* Contain repaints to their layers */
+#sanctuary, #ui, .modal-overlay {
+  contain: layout style;
+}
