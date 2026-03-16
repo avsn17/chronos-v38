@@ -1,86 +1,77 @@
 (function() {
-  const cursor = document.createElement('div');
-  cursor.id = 'retro-cursor';
-  cursor.style.cssText = `
-    position:fixed; width:12px; height:12px;
-    pointer-events:none; z-index:99999;
-    transform:translate(-50%,-50%);
-    will-change:left,top;
-  `;
-  const dot = document.createElement('div');
-  dot.style.cssText = `
-    width:4px; height:4px;
+  const el = document.createElement('div');
+  el.style.cssText = `
+    position:fixed;
+    top:0; left:0;
+    width:8px; height:8px;
     background:var(--accent,#d4af37);
-    position:absolute; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:999999;
     image-rendering:pixelated;
-    box-shadow:-4px 0 0 var(--accent,#d4af37),4px 0 0 var(--accent,#d4af37),
-               0 -4px 0 var(--accent,#d4af37),0 4px 0 var(--accent,#d4af37);
+    box-shadow:
+      -4px 0 0 0 var(--accent,#d4af37),
+       4px 0 0 0 var(--accent,#d4af37),
+       0 -4px 0 0 var(--accent,#d4af37),
+       0  4px 0 0 var(--accent,#d4af37),
+       0 0 8px 2px var(--accent,#d4af37);
+    will-change:transform;
   `;
-  cursor.appendChild(dot);
-  document.body.appendChild(cursor);
+  document.body.appendChild(el);
 
-  const sparkleContainer = document.createElement('div');
-  sparkleContainer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99997;overflow:hidden;';
-  document.body.appendChild(sparkleContainer);
+  const sparkles = document.createElement('div');
+  sparkles.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:999998;';
+  document.body.appendChild(sparkles);
 
-  const SHAPES = ['✦','✧','⋆','·','★','✸'];
+  const CHARS = ['✦','✧','⋆','·','★'];
+  let tick = 0;
 
-  function getAccent() {
-    return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4af37';
+  function accent() {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent').trim() || '#d4af37';
   }
 
-  function spawnSparkle(x, y) {
-    const el = document.createElement('div');
-    const angle = Math.random() * 360;
-    const dist  = Math.random() * 18 + 6;
-    const dx    = Math.cos(angle * Math.PI / 180) * dist;
-    const dy    = Math.sin(angle * Math.PI / 180) * dist;
-    const accent = getAccent();
-    el.textContent = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-    el.style.cssText = `
-      position:absolute; left:${x}px; top:${y}px;
-      font-size:${Math.random()*8+5}px;
-      color:${accent}; pointer-events:none;
+  function spark(x, y) {
+    const s = document.createElement('span');
+    const a = accent();
+    const dx = (Math.random()-0.5)*28;
+    const dy = (Math.random()-0.5)*28;
+    s.textContent = CHARS[tick % CHARS.length];
+    s.style.cssText = `
+      position:absolute;
+      left:${x}px; top:${y}px;
+      font-size:${6+Math.random()*8}px;
+      color:${a};
+      text-shadow:0 0 6px ${a};
+      pointer-events:none;
       transform:translate(-50%,-50%);
-      text-shadow:0 0 4px ${accent};
-      opacity:1;
-      transition:opacity 200ms ease, transform 200ms ease;
-      will-change:opacity,transform;
+      transition:transform 180ms linear, opacity 180ms linear;
+      will-change:transform,opacity;
     `;
-    sparkleContainer.appendChild(el);
+    sparkles.appendChild(s);
     requestAnimationFrame(() => {
-      el.style.opacity = '0';
-      el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.2)`;
+      s.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.1)`;
+      s.style.opacity = '0';
     });
-    setTimeout(() => el.remove(), 220);
+    setTimeout(() => s.remove(), 200);
   }
-
-  // Track mouse with requestAnimationFrame for zero lag
-  let mx = 0, my = 0, frame = 0;
 
   document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    // Instant cursor — no RAF delay
-    cursor.style.left = mx + 'px';
-    cursor.style.top  = my + 'px';
-
-    const accent = getAccent();
-    dot.style.background = accent;
-    dot.style.boxShadow = `-4px 0 0 ${accent},4px 0 0 ${accent},0 -4px 0 ${accent},0 4px 0 ${accent}`;
-
-    if (frame++ % 3 !== 0) return;
-    spawnSparkle(mx, my);
-  });
+    // Use transform instead of left/top — GPU accelerated, no layout
+    el.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`;
+    const a = accent();
+    el.style.background = a;
+    el.style.boxShadow = `-4px 0 0 ${a},4px 0 0 ${a},0 -4px 0 ${a},0 4px 0 ${a},0 0 8px 2px ${a}`;
+    if (++tick % 4 === 0) spark(e.clientX, e.clientY);
+  }, { passive: true });
 
   document.addEventListener('click', e => {
-    for (let i = 0; i < 8; i++) spawnSparkle(e.clientX, e.clientY);
+    for (let i = 0; i < 7; i++) spark(e.clientX, e.clientY);
   });
 
   new MutationObserver(() => {
-    const accent = getAccent();
-    dot.style.background = accent;
-    dot.style.boxShadow = `-4px 0 0 ${accent},4px 0 0 ${accent},0 -4px 0 ${accent},0 4px 0 ${accent}`;
+    const a = accent();
+    el.style.background = a;
+    el.style.boxShadow = `-4px 0 0 ${a},4px 0 0 ${a},0 -4px 0 ${a},0 4px 0 ${a},0 0 8px 2px ${a}`;
   }).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
 
 })();
