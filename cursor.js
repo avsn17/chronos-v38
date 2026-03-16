@@ -1,84 +1,77 @@
-// Retro pixel cursor — matches current theme accent color
 (function() {
-  const cursorEl    = document.getElementById('cursor-canvas');
-  const trailEl     = document.getElementById('cursor-trail');
-  const ctx         = cursorEl.getContext('2d');
-  let mx = -100, my = -100;
+  // Create cursor element
+  const cursor = document.createElement('div');
+  cursor.id = 'retro-cursor';
+  cursor.style.cssText = `
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+  `;
 
-  // 16x16 pixel arrow cursor bitmap (1=filled, 0=empty)
-  const ARROW = [
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],
-    [1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  ];
+  // Inner pixel dot
+  const dot = document.createElement('div');
+  dot.style.cssText = `
+    width: 4px;
+    height: 4px;
+    background: var(--accent, #d4af37);
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    image-rendering: pixelated;
+    box-shadow:
+      -4px 0 0 var(--accent, #d4af37),
+       4px 0 0 var(--accent, #d4af37),
+       0 -4px 0 var(--accent, #d4af37),
+       0  4px 0 var(--accent, #d4af37);
+  `;
 
-  function getAccent() {
-    return getComputedStyle(document.documentElement)
-      .getPropertyValue('--accent').trim() || '#d4af37';
-  }
+  cursor.appendChild(dot);
+  document.body.appendChild(cursor);
 
-  function drawCursor() {
-    ctx.clearRect(0, 0, 16, 16);
-    const color = getAccent();
-    // outline (black, 1px offset)
-    ctx.fillStyle = 'rgba(0,0,0,0.9)';
-    for (let y = 0; y < 16; y++) {
-      for (let x = 0; x < 16; x++) {
-        if (!ARROW[y][x]) continue;
-        const neighbors = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]];
-        for (const [dy,dx] of neighbors) {
-          const ny = y+dy, nx = x+dx;
-          if (ny>=0&&ny<16&&nx>=0&&nx<16&&!ARROW[ny][nx]) {
-            ctx.fillRect(nx, ny, 1, 1);
-          }
-        }
-      }
-    }
-    // fill
-    ctx.fillStyle = color;
-    for (let y = 0; y < 16; y++)
-      for (let x = 0; x < 16; x++)
-        if (ARROW[y][x]) ctx.fillRect(x, y, 1, 1);
-  }
+  // Trail container
+  const trail = document.createElement('div');
+  trail.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99998;';
+  document.body.appendChild(trail);
 
-  function moveCursor(e) {
-    mx = e.clientX; my = e.clientY;
-    cursorEl.parentElement.style.left = mx + 'px';
-    cursorEl.parentElement.style.top  = my + 'px';
-    spawnTrail(mx, my);
-    drawCursor();
-  }
+  let frame = 0;
 
-  let trailCount = 0;
-  function spawnTrail(x, y) {
-    if (trailCount++ % 3 !== 0) return; // every 3rd move
-    const dot = document.createElement('div');
-    dot.className = 'trail-dot';
-    dot.style.left = x + 'px';
-    dot.style.top  = y + 'px';
-    dot.style.background = getAccent();
-    trailEl.appendChild(dot);
-    setTimeout(() => dot.remove(), 420);
-  }
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
 
-  document.addEventListener('mousemove', moveCursor);
+    // Update dot color to match current theme
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4af37';
+    dot.style.background = accent;
+    dot.style.boxShadow = `
+      -4px 0 0 ${accent}, 4px 0 0 ${accent},
+       0 -4px 0 ${accent}, 0  4px 0 ${accent}
+    `;
 
-  // Redraw on theme change (accent color changes)
-  const observer = new MutationObserver(drawCursor);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    // Spawn trail every 2nd move
+    if (frame++ % 2 !== 0) return;
+    const td = document.createElement('div');
+    td.style.cssText = `
+      position:absolute;
+      left:${e.clientX}px; top:${e.clientY}px;
+      width:3px; height:3px;
+      background:${accent};
+      transform:translate(-50%,-50%);
+      opacity:0.6;
+      transition:opacity 0.35s ease, transform 0.35s ease;
+      image-rendering:pixelated;
+    `;
+    trail.appendChild(td);
+    requestAnimationFrame(() => { td.style.opacity = '0'; td.style.transform = 'translate(-50%,-50%) scale(0)'; });
+    setTimeout(() => td.remove(), 380);
+  });
 
-  drawCursor();
+  // Observe theme changes
+  new MutationObserver(() => {
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4af37';
+    dot.style.background = accent;
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
 })();
