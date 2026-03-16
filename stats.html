@@ -55,7 +55,7 @@
         async function loadStats() {
             try {
                 // Fetch the JSON log created by the Iroh Bot
-                const response = await fetch('pilot_history.json');
+                const stored = localStorage.getItem("sv38_flights"); let data = stored ? JSON.parse(stored) : []; if (!data.length) { try { const r = await fetch("pilot_history.json"); data = await r.json(); } catch(e) {} }
                 const data = await response.json();
 
                 // Process data for the chart
