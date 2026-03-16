@@ -1,0 +1,4 @@
+__pycache__/
+music_signal.txt
+*.bak
+*.pyc
