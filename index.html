@@ -211,6 +211,7 @@
 
 <div id="cursor"><canvas id="cursor-canvas" width="16" height="16"></canvas></div>
 <div id="cursor-trail"></div>
+<div id="stream-player" style="position:fixed;bottom:60px;right:14px;width:280px;height:158px;border:1px solid var(--border);background:#000;z-index:500;display:none;flex-direction:column;overflow:hidden;"><div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-bottom:1px solid var(--border);font-size:0.45rem;letter-spacing:2px;color:var(--gold);">NEURAL STREAM<button onclick="closeStream()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-family:var(--font-mono);font-size:0.7rem;">✕</button></div><iframe id="stream-iframe" width="280" height="140" src="" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="display:block;"></iframe></div>
 <script src="music_ytb.js"></script>
 <script src="script.js"></script>
 <script src="cursor.js"></script>
