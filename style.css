@@ -460,3 +460,277 @@ input[type="text"], input[type="number"], select {
   margin-right: 6px;
   font-size: 0.46rem;
 }
+
+/* ══════════════════════════════════════════════════════
+   RETRO CRT OVERHAUL
+   ══════════════════════════════════════════════════════ */
+
+/* CRT screen effect on body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.13) 0px,
+    rgba(0, 0, 0, 0.13) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* CRT flicker */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 99989;
+  pointer-events: none;
+  background: rgba(18, 16, 16, 0.07);
+  animation: crt-flicker 0.08s infinite;
+  mix-blend-mode: overlay;
+}
+
+@keyframes crt-flicker {
+  0%   { opacity: 0.27; }
+  5%   { opacity: 0.32; }
+  10%  { opacity: 0.24; }
+  15%  { opacity: 0.9;  }
+  20%  { opacity: 0.18; }
+  25%  { opacity: 0.82; }
+  30%  { opacity: 0.64; }
+  35%  { opacity: 0.57; }
+  40%  { opacity: 0.26; }
+  45%  { opacity: 0.84; }
+  50%  { opacity: 0.95; }
+  55%  { opacity: 0.1;  }
+  60%  { opacity: 0.22; }
+  65%  { opacity: 0.7;  }
+  70%  { opacity: 0.52; }
+  75%  { opacity: 0.38; }
+  80%  { opacity: 0.71; }
+  85%  { opacity: 0.68; }
+  90%  { opacity: 0.7;  }
+  95%  { opacity: 0.36; }
+  100% { opacity: 0.24; }
+}
+
+/* CRT vignette — dark edges */
+#sanctuary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0,0,0,0.75) 100%
+  );
+}
+
+/* CRT screen curvature simulation */
+#sanctuary {
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.6),
+    0 0 0 2px rgba(212,175,55,0.08),
+    0 0 60px rgba(0,0,0,0.9);
+}
+
+/* Phosphor green/amber text glow on all text */
+body {
+  text-shadow: 0 0 4px var(--accent);
+}
+
+/* Panels — CRT monitor bezel style */
+.panel {
+  background: rgba(0,0,0,0.82);
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.5),
+    0 0 8px var(--gold-glow),
+    0 0 1px var(--accent);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scanline on panels */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.08) 0px,
+    rgba(0,0,0,0.08) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Timer — phosphor glow */
+#timerDisplay {
+  font-size: 3.2rem;
+  letter-spacing: -2px;
+  color: var(--accent);
+  text-shadow:
+    0 0 8px var(--accent),
+    0 0 20px var(--gold-glow),
+    0 0 40px var(--gold-glow);
+  animation: phosphor-pulse 3s ease-in-out infinite;
+}
+
+@keyframes phosphor-pulse {
+  0%,100% { text-shadow: 0 0 8px var(--accent), 0 0 20px var(--gold-glow), 0 0 40px var(--gold-glow); }
+  50%      { text-shadow: 0 0 12px var(--accent), 0 0 30px var(--gold-glow), 0 0 60px var(--gold-glow); }
+}
+
+/* Intent display — chromatic aberration */
+#intentDisplay {
+  color: var(--accent);
+  text-shadow:
+    0.05em 0 0 rgba(255,0,0,0.4),
+   -0.025em -0.05em 0 rgba(0,255,0,0.3),
+    0.025em 0.05em 0 rgba(0,0,255,0.3),
+    0 0 20px var(--gold-glow);
+  animation: glitch-drift 6s ease-in-out infinite;
+}
+
+@keyframes glitch-drift {
+  0%,90%,100% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.4),-0.025em -0.05em 0 rgba(0,255,0,0.3),0.025em 0.05em 0 rgba(0,0,255,0.3),0 0 20px var(--gold-glow); }
+  92% { text-shadow: -0.05em 0 0 rgba(255,0,0,0.6),0.025em 0.05em 0 rgba(0,255,0,0.4),-0.025em -0.05em 0 rgba(0,0,255,0.4),0 0 20px var(--gold-glow); clip-path: inset(10% 0 80% 0); }
+  94% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.4),-0.025em -0.05em 0 rgba(0,255,0,0.3),0 0 20px var(--gold-glow); }
+}
+
+/* Buttons — CRT terminal style */
+.btn {
+  border-radius: 0;
+  text-shadow: 0 0 6px var(--accent);
+  box-shadow: 0 0 6px var(--gold-glow);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.06) 0px,
+    rgba(0,0,0,0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+.btn:hover {
+  box-shadow: 0 0 14px var(--gold-glow), 0 0 2px var(--accent);
+  text-shadow: 0 0 10px var(--accent);
+}
+.btn-primary {
+  box-shadow: 0 0 18px var(--gold-glow), inset 0 0 10px rgba(212,175,55,0.05);
+  animation: btn-breathe 3s ease-in-out infinite;
+}
+@keyframes btn-breathe {
+  0%,100% { box-shadow: 0 0 18px var(--gold-glow), inset 0 0 10px rgba(212,175,55,0.05); }
+  50%      { box-shadow: 0 0 28px var(--gold-glow), inset 0 0 16px rgba(212,175,55,0.08); }
+}
+
+/* Log feed — terminal green tint */
+.log-entry { color: rgba(212,175,55,0.5); }
+.log-entry.new { color: var(--accent); text-shadow: 0 0 6px var(--gold-glow); }
+.log-entry .ts { color: rgba(212,175,55,0.25); }
+
+/* Modal — CRT overlay */
+.modal-box {
+  border-radius: 0;
+  border: 1px solid var(--accent);
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.9),
+    0 0 20px var(--gold-glow),
+    inset 0 0 30px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.modal-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.07) 0px,
+    rgba(0,0,0,0.07) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+.modal-box > * { position: relative; z-index: 1; }
+
+/* Header title — blinking cursor effect */
+#header-title::after {
+  content: '█';
+  animation: blink 1.2s step-end infinite;
+  opacity: 0.6;
+  margin-left: 4px;
+  font-size: 0.6rem;
+}
+@keyframes blink {
+  0%,100% { opacity: 0.6; }
+  50%      { opacity: 0; }
+}
+
+/* Pilot tag glow */
+#pilot-tag {
+  text-shadow: 0 0 8px var(--gold-glow);
+  animation: phosphor-pulse 4s ease-in-out infinite;
+}
+
+/* Timer arc glow enhanced */
+#timer-arc {
+  filter: drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 8px var(--gold-glow));
+}
+
+/* Stat values glow */
+.stat-val {
+  text-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* Input fields — terminal style */
+input[type="text"], input[type="number"], select {
+  border-radius: 0;
+  background: rgba(0,0,0,0.6);
+  border-color: var(--accent);
+  box-shadow: 0 0 6px var(--gold-glow);
+  text-shadow: 0 0 4px var(--accent);
+}
+input:focus, select:focus {
+  box-shadow: 0 0 14px var(--gold-glow);
+}
+
+/* Bottom bar */
+#bottom-bar {
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
+.inst-item kbd {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-shadow: 0 0 4px var(--gold-glow);
+  box-shadow: 0 0 4px var(--gold-glow);
+}
+
+/* Header */
+#header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
