@@ -37,15 +37,11 @@ npm install
 pip install -r requirements.txt   # if present
 ```
 
-### Run
+### Write
 
-```bash
-# Start the main app
-python3 script.py
+poyo
 
-# Or open index.html directly in your browser
-open index.html
-```
+wid
 
 ---
 
