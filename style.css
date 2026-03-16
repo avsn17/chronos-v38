@@ -734,3 +734,144 @@ input:focus, select:focus {
   background: rgba(0,0,0,0.5);
   backdrop-filter: blur(4px);
 }
+
+/* ══════════════════════════════════════════════════════
+   MOVING SPACE BACKGROUND
+   ══════════════════════════════════════════════════════ */
+
+/* Star layers — parallax scroll at different speeds */
+#sanctuary {
+  overflow: hidden;
+}
+
+#stars {
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25%  8%, rgba(255,255,255,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 20%, rgba(255,255,255,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55%  5%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 12%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 18%, rgba(255,255,255,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 35%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 48% 10%, rgba(255,255,240,1) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 20% 22%, rgba(255,255,240,.9) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 92%  8%, rgba(255,255,240,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 33% 45%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 77% 55%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5%  60%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,.3) 0%, transparent 100%),
+    radial-gradient(2px 2px at 18% 80%, rgba(255,255,240,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 75%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 65%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 38% 88%, rgba(255,255,255,.5) 0%, transparent 100%);
+  background-size: 400px 300px;
+  animation: drift-slow 60s linear infinite;
+}
+
+/* Second star layer — faster, different direction */
+#stars::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 15%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 35%, rgba(255,255,255,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 23% 68%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 56% 82%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 89% 55%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 34% 42%, rgba(255,255,240,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 67% 28%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8%  90%, rgba(255,255,255,.3) 0%, transparent 100%),
+    radial-gradient(2px 2px at 91% 12%, rgba(255,255,240,.9) 0%, transparent 100%);
+  background-size: 300px 250px;
+  animation: drift-fast 35s linear infinite reverse;
+  opacity: 0.6;
+}
+
+/* Third layer — shooting stars */
+#stars::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 60%),
+    linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 60%);
+  background-size: 200% 1px, 150% 1px;
+  background-position: -100% 30%, -100% 65%;
+  background-repeat: no-repeat;
+  animation: shooting-star 8s ease-in-out infinite, shooting-star2 12s ease-in-out 4s infinite;
+}
+
+@keyframes drift-slow {
+  0%   { background-position: 0 0; }
+  100% { background-position: 400px 300px; }
+}
+
+@keyframes drift-fast {
+  0%   { background-position: 0 0; }
+  100% { background-position: -300px -250px; }
+}
+
+@keyframes shooting-star {
+  0%   { background-position: -100% 30%, -100% 65%; opacity: 0; }
+  5%   { opacity: 1; }
+  30%  { background-position: 200% 30%, -100% 65%; opacity: 0; }
+  100% { background-position: 200% 30%, -100% 65%; opacity: 0; }
+}
+
+@keyframes shooting-star2 {
+  0%   { background-position: 200% 30%, -100% 65%; opacity: 0; }
+  5%   { opacity: 1; }
+  30%  { background-position: 200% 30%, 200% 65%; opacity: 0; }
+  100% { background-position: 200% 30%, 200% 65%; opacity: 0; }
+}
+
+/* ── TIMER RING — space nebula background ────────────── */
+#timer-ring::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212,175,55,0.06) 0%,
+    rgba(212,175,55,0.03) 40%,
+    transparent 70%
+  );
+  animation: nebula-pulse 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+/* Orbiting dot around timer */
+#timer-ring::after {
+  content: '✦';
+  position: absolute;
+  font-size: 10px;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent), 0 0 16px var(--gold-glow);
+  top: 50%; left: 50%;
+  transform-origin: 0 0;
+  animation: orbit 8s linear infinite;
+  z-index: 20;
+}
+
+@keyframes nebula-pulse {
+  0%,100% { transform: scale(1);   opacity: 0.8; }
+  50%      { transform: scale(1.1); opacity: 1;   }
+}
+
+@keyframes orbit {
+  0%   { transform: rotate(0deg)   translate(105px) rotate(0deg);   }
+  100% { transform: rotate(360deg) translate(105px) rotate(-360deg); }
+}
+
+/* Warp active — stars speed up */
+body.warp-active #stars {
+  animation-duration: 15s;
+}
+body.warp-active #stars::before {
+  animation-duration: 8s;
+}

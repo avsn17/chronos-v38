@@ -59,7 +59,7 @@ function startWarp() {
     setText('warpBtn','ABORT WARP [SPC]');
     getEl('warpBtn').classList.add('engaged');
     setText('systemStatus','IN_WARP · PILOT: '+(pilotName||'---'));
-    addLog('WARP_SEQUENCE_INITIATED');
+    addLog('WARP_SEQUENCE_INITIATED'); document.body.classList.add('warp-active');
     timerInterval = setInterval(tick, 1000);
 }
 
@@ -68,7 +68,7 @@ function pauseWarp() {
     setText('warpBtn','RESUME WARP [SPC]');
     getEl('warpBtn').classList.remove('engaged');
     setText('systemStatus','PAUSED · PILOT: '+(pilotName||'---'));
-    addLog('WARP_PAUSED');
+    addLog('WARP_PAUSED'); document.body.classList.remove('warp-active');
 }
 
 function tick() {
@@ -87,7 +87,7 @@ function resetTimer() {
     setText('warpBtn','ENGAGE WARP [SPC]');
     getEl('warpBtn').classList.remove('engaged');
     setText('systemStatus','STANDBY · PILOT: '+(pilotName||'---'));
-    addLog('TIMER_RESET');
+    addLog('TIMER_RESET'); document.body.classList.remove('warp-active');
 }
 
 async function warpComplete() {
