@@ -1,4 +1,3 @@
-# chronos-v38
 # 🛰️ Chronos V38 — IROH Sanctuary
 
 A cosmic Pomodoro timer and productivity station built for focused work sessions, music, and terminal-based mindfulness.
@@ -7,73 +6,73 @@ A cosmic Pomodoro timer and productivity station built for focused work sessions
 
 ## ✨ Features
 
-- **Pomodoro Timer** — 25-minute focus sessions with session tracking and XP
+- **Pomodoro Timer** — customizable focus sessions with session tracking
 - **IROH Sanctuary UI** — immersive animated sky/sun interface (`index.html`)
-- **Music Player** — YouTube-based stream integration via `music.py` and `music_ytb.js`
-- **Pilot Stats** — session history saved to `pilot_history.json` and `stats_history.json`
+- **Element Themes** — Void, Fire, Water, Earth, Air atmospheres
+- **Neural Streams** — YouTube music auto-plays on session complete
+- **Pilot Stats** — session history saved to localStorage, exportable as `mission_log.json`
 - **Stats Dashboard** — visual session overview via `stats.html`
-- **Cosmic Widget** — terminal notification system with Kirby animations
+- **Command Palette** — `⌘K` for all commands
+- **IROH Wisdom Engine** — quotes from Uncle Iroh on demand
 - **Time Interval Tracker** — hydration and break reminders via `time_interval.py`
-- **IROH Bot** — companion bot with history logging (`iroh.bot`, `bot_history.log`)
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 ```bash
 node >= 18
 python3
-mpv (for music playback)
 ```
 
 ### Install
-
 ```bash
 git clone https://github.com/avsn17/chronos-v38.git
 cd chronos-v38
-npm install
-pip install -r requirements.txt   # if present
 ```
 
-### Write
+### Run
 
-poyo
-
-wid
+Open `index.html` directly in your browser — no build step required.
+```bash
+open index.html        # macOS
+xdg-open index.html    # Linux
+```
 
 ---
 
 ## 📁 File Structure
-
 ```
 chronos-v38/
-├── index.html              # Main IROH Sanctuary UI
-├── iroh_sanctuary.html     # Alternate sanctuary view
-├── script.py               # Core timer + session logic
-├── music.py                # Music player backend
-├── music_ytb.js            # YouTube stream handler
-├── time_interval.py        # Hydration/break reminders
-├── iroh.bot                # IROH bot config
-├── iroh_bot.sh             # Bot launcher script
-├── stats.html              # Session stats dashboard
-├── stats_history.json      # Historical session data
-├── pilot_history.json      # Per-pilot flight log
-├── bot_history.log         # IROH bot interaction log
-├── style.css               # Shared styles
-├── diagnose.sh             # Diagnostics script
-└── save_all.sh             # Backup/save utility
+├── index.html          # Main IROH Sanctuary UI
+├── iroh_sanctuary.html # Alternate sanctuary view
+├── script.js           # Core timer + session logic
+├── style.css           # Shared styles
+├── stats.html          # Session stats dashboard
+├── music.py            # Music player backend (optional)
+├── music_ytb.js        # YouTube stream handler
+├── time_interval.py    # Hydration/break reminders
+├── iroh.bot            # IROH bot config
+├── iroh_bot.sh         # Bot launcher script
+└── save_all.sh         # Backup/save utility
 ```
 
 ---
 
 ## 🎮 Usage
 
-- **Start session** — click the timer or run `script.py`
-- **Music** — streams play automatically on session start via `mpv`
-- **Stats** — open `stats.html` in browser to review your sessions
-- **Widget** — run `python3 widget.py` (if present) in a split terminal for live Kirby notifications
+| Action | How |
+|--------|-----|
+| Start session | Click **ENGAGE WARP** or press `Space` |
+| Pause / abort | Click **ABORT WARP** or press `Space` |
+| Reset timer | Press `R` |
+| Consult Iroh | Press `I` |
+| New mission | Press `N` |
+| Command palette | `⌘K` / `Ctrl+K` |
+| Switch streams | Keys `1`–`5` |
+| Change element | Keys `F` `W` `E` `A` `V` |
+| Export flight log | Right panel → **EXPORT** |
 
 ---
 
