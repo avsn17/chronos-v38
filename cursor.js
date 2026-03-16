@@ -1,11 +1,11 @@
 (function() {
-  // Cursor element
   const cursor = document.createElement('div');
   cursor.id = 'retro-cursor';
   cursor.style.cssText = `
     position:fixed; width:12px; height:12px;
     pointer-events:none; z-index:99999;
     transform:translate(-50%,-50%);
+    will-change:left,top;
   `;
   const dot = document.createElement('div');
   dot.style.cssText = `
@@ -20,13 +20,11 @@
   cursor.appendChild(dot);
   document.body.appendChild(cursor);
 
-  // Sparkle container
   const sparkleContainer = document.createElement('div');
   sparkleContainer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99997;overflow:hidden;';
   document.body.appendChild(sparkleContainer);
 
-  // Sparkle shapes (pixel stars)
-  const SHAPES = ['✦','✧','⋆','·','★','✸','✺','✹'];
+  const SHAPES = ['✦','✧','⋆','·','★','✸'];
 
   function getAccent() {
     return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4af37';
@@ -34,63 +32,51 @@
 
   function spawnSparkle(x, y) {
     const el = document.createElement('div');
-    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-    const size  = Math.random() * 10 + 6;
     const angle = Math.random() * 360;
-    const dist  = Math.random() * 24 + 8;
+    const dist  = Math.random() * 18 + 6;
     const dx    = Math.cos(angle * Math.PI / 180) * dist;
     const dy    = Math.sin(angle * Math.PI / 180) * dist;
     const accent = getAccent();
-    const duration = Math.random() * 300 + 350;
-
-    el.textContent = shape;
+    el.textContent = SHAPES[Math.floor(Math.random() * SHAPES.length)];
     el.style.cssText = `
-      position:absolute;
-      left:${x}px; top:${y}px;
-      font-size:${size}px;
-      color:${accent};
-      pointer-events:none;
+      position:absolute; left:${x}px; top:${y}px;
+      font-size:${Math.random()*8+5}px;
+      color:${accent}; pointer-events:none;
       transform:translate(-50%,-50%);
       text-shadow:0 0 4px ${accent};
       opacity:1;
-      transition:opacity ${duration}ms ease, transform ${duration}ms ease;
-      font-family:monospace;
-      image-rendering:pixelated;
+      transition:opacity 200ms ease, transform 200ms ease;
+      will-change:opacity,transform;
     `;
     sparkleContainer.appendChild(el);
-
     requestAnimationFrame(() => {
       el.style.opacity = '0';
-      el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3)`;
+      el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.2)`;
     });
-    setTimeout(() => el.remove(), duration + 50);
+    setTimeout(() => el.remove(), 220);
   }
 
-  let frame = 0;
-  document.addEventListener('mousemove', e => {
-    // Move cursor
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
+  // Track mouse with requestAnimationFrame for zero lag
+  let mx = 0, my = 0, frame = 0;
 
-    // Update dot color
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    // Instant cursor — no RAF delay
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+
     const accent = getAccent();
     dot.style.background = accent;
     dot.style.boxShadow = `-4px 0 0 ${accent},4px 0 0 ${accent},0 -4px 0 ${accent},0 4px 0 ${accent}`;
 
-    // Spawn sparkles every 2nd frame
-    if (frame++ % 2 !== 0) return;
-    const count = Math.floor(Math.random() * 2) + 1;
-    for (let i = 0; i < count; i++) {
-      spawnSparkle(e.clientX, e.clientY);
-    }
+    if (frame++ % 3 !== 0) return;
+    spawnSparkle(mx, my);
   });
 
-  // Click burst — more sparkles on click
   document.addEventListener('click', e => {
     for (let i = 0; i < 8; i++) spawnSparkle(e.clientX, e.clientY);
   });
 
-  // Theme change observer
   new MutationObserver(() => {
     const accent = getAccent();
     dot.style.background = accent;
